@@ -8,9 +8,9 @@ class ControlAux {
 	private $entityName;
 	private $crud;
 	
-	public function __construct($entityName, array $config) {
+	public function __construct($daoName,$entityName, array $config) {
 		$this->entityName = $entityName;
-		$this->crud = new ControlCRUD($entityName, $config);
+		$this->crud = new ControlCRUD($daoName,$entityName, $config);
 	}
 
 	public function getDTO($key) {
