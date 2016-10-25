@@ -6,6 +6,7 @@ use Doctrine\ORM\Tools\Setup;
 use ttm\dao\Dao;
 use ttm\model\ObjectBO;
 
+
 class DoctrineDao implements Dao{
 
 	private $entityManager;
