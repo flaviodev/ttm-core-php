@@ -1,0 +1,26 @@
+{
+	"name" : "flaviodev/ttm",
+	"type" : "library",
+	"description" : "Architecture Core",
+	"version" : "1.0.0",
+	"license" : "MIT",
+	"minimum-stability" : "dev",
+	"keywords" : [
+		"core"
+	],
+	"homepage" : "https://github.com/flaviodev/ttm",
+	"authors" : [{
+			"name" : "Flávio de Souza",
+			"email" : "fdsdev@gmail.com"
+		}
+	],
+	"require" : {
+		"php" : "^7.0"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"\\" : "/",
+			"ttm\\" : "src/"
+		}
+	}
+}
