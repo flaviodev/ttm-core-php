@@ -1,5 +1,5 @@
 {
-	"name" : "flaviodev/ttm",
+	"name" : "flaviodev/ttm-core-php",
 	"type" : "library",
 	"description" : "Architecture Core",
 	"version" : "1.0.0",
@@ -8,7 +8,7 @@
 	"keywords" : [
 		"core"
 	],
-	"homepage" : "https://github.com/flaviodev/ttm",
+	"homepage" : "https://github.com/flaviodev/ttm-core-php",
 	"authors" : [{
 			"name" : "Flávio de Souza",
 			"email" : "fdsdev@gmail.com"
