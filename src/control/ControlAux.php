@@ -4,7 +4,6 @@ namespace ttm\control;
 use ttm\model\ObjectBO;
 
 class ControlAux {
-	
 	private $entityName;
 	private $crud;
 	
