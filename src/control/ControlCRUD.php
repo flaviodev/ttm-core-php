@@ -9,10 +9,9 @@ class ControlCRUD {
 	private $entityName;
 	private $dao;
 	
-	
-	public function __construct($daoName,$entityName, array $config) {
+	public function __construct($daoName, $entityName, array $config) {
 		$this->entityName = $entityName;
-		$this->dao = DaoFactory::getInstance($daoName, $config);
+		$this->dao =  DaoFactory::getInstance($daoName, $config);
 	}
 	
 	public function getEntity($key):ObjectBO {
