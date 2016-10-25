@@ -2,7 +2,7 @@
 	"name" : "flaviodev/ttm-core-php",
 	"type" : "library",
 	"description" : "Architecture Core",
-	"version" : "1.0.0",
+	"version" : "master",
 	"license" : "MIT",
 	"minimum-stability" : "dev",
 	"keywords" : [
