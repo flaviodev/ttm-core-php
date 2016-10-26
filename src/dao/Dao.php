@@ -14,4 +14,6 @@ interface Dao {
 	
 	public function create(ObjectBO $entity):ObjectBO;
 	
+	public function getEntityManager(array $options=null);
+	
 }
