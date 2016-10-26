@@ -18,6 +18,14 @@ abstract class AbstractAux {
 		$bo = $this->crud->getEntity($key);
 		return $this->parseDTO ($bo);
 	}
+
+	public function getBO($key):ObjectBO {
+		return $this->crud->getEntity($key);
+	}
+
+	public function getBOs():array {
+		return $this->crud->getEntities();
+	}
 	
 	public function getDTOs():array {
 		$bos = $this->crud->getEntities();
