@@ -14,14 +14,6 @@ abstract class AbstractAux {
 		$this->crud = new ControlCRUD($entityName, $config);
 	}
 	
-	public function getDTO($key):ObjectDTO {
-		if(is_null($key))
-			return null;
-		
-		$bo = $this->crud->getEntity($key);
-		return $this->parseDTO ($bo);
-	}
-
 	public function getBO($key):ObjectBO {
 		if(is_null($key))
 			return null;
@@ -32,34 +24,22 @@ abstract class AbstractAux {
 	public function getBOs():array {
 		return $this->crud->getEntities();
 	}
-	
-	public function getDTOs():array {
-		$bos = $this->crud->getEntities();
 		
-		$dtos = array();
-		foreach($bos as $bo) {
-			array_push($dtos, $this->parseDTO($bo));
-		}
-		
-		return $dtos;
-	}
-	
-	public function create($dto):ObjectDTO {
-		if(is_null($dto))
+	public function create($object):ObjectBO {
+		if(is_null($object))
 			return null;
 		
-		$bo = $this->parseNewBO($dto);
-		$bo = $this->crud->createEntity($bo);
+		$bo = $this->parseNewBO($object);
 		
-		return $this->parseDTO($bo);
+		return $this->crud->createEntity($bo);
 	}
 	
-	public function update($dto){
-		if(is_null($dto))
+	public function update($object){
+		if(is_null($object))
 			return null;
 		
-		$bo = $this->crud->getEntity($dto->id);
-		$this->updateBO($dto,$bo);
+		$bo = $this->crud->getEntity($object->id);
+		$this->updateBO($object,$bo);
 		$this->crud->updateEntity($bo);
 	}
 	
@@ -71,20 +51,7 @@ abstract class AbstractAux {
 		$this->crud->deleteEntity($bo);
 	}
 	
-	public function parseDTOs($bos):array {
-		if(is_null($bos))
-			return null;
-		
-		$dtos = array();
-		foreach($bos as $bo) {
-			array_push($dtos, $this->parseDTO($bo));
-		}
-		
-		return $dtos;
-	}
-	
-	protected abstract function parseNewBO($dto):ObjectBO;
-	protected abstract function updateBO($dto,ObjectBO &$bo);
-	protected abstract function parseDTO(ObjectBO $bo):ObjectDTO;
+	protected abstract function parseNewBO($object):ObjectBO;
+	protected abstract function updateBO($object,ObjectBO &$bo);
 	
 }
