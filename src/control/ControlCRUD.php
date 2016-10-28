@@ -6,20 +6,18 @@ use ttm\dao\DaoFactory;
 use ttm\model\ObjectBO;
 
 class ControlCRUD {
-	private $entityName;
 	private $dao;
 	
-	public function __construct($entityName, array $config) {
-		$this->entityName = $entityName;
+	public function __construct(array $config) {
 		$this->dao =  DaoFactory::getInstance($config["dao"], $config);
 	}
 	
-	public function getEntity($key):ObjectBO {
-		return $this->dao->find($this->entityName, $key);
+	public function getEntity($entityName,$id):ObjectBO {
+		return $this->dao->find($entityName, $id);
 	}
 	
-	public function getEntities():array {
-		return $this->dao->findAll($this->entityName);
+	public function getAllEntities($entityName):array {
+		return $this->dao->findAll($entityName);
 	}
 	
 	public function createEntity(ObjectBO $entity):ObjectBO {
