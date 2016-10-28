@@ -49,18 +49,22 @@ class ServiceHelper {
 		}
 		
 		$objectBO = $this->dao->find($entity,$object->id);
-		$this->parseObjectToBO($object,$objectBO);
-
-		$this->crud->updateEntity($objectBO);
+		if (!is_null($objectBO)) {
+			$this->parseObjectToBO($object,$objectBO);
+			$this->crud->updateEntity($objectBO);
+		}
 	}
 
-	public function delete($key) {
-		if(is_null($key))
+	public function deleteEntity($entity,$id) {
+		if(is_null($id) || is_null($entity)){
 			return;
+		}
+		
+		$objectBO = $this->dao->find($entity, $id);
 
-			$objectBO = $this->crud->getEntity($key);
-
-			$this->crud->deleteEntity($objectBO);
+		if (!is_null($objectBO)) {
+			$this->dao->remove($objectBO);
+		}
 	}
 
 	private function parseObjectToBO($object,ObjectBO &$objectBO) {
