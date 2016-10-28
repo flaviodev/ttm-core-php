@@ -23,7 +23,7 @@ interface Dao {
 	 * @access public
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @param $id - primary key for find register on data base
-	 * @return ObjectBO - mapped object fill with data 
+	 * @return ttm\model\ObjectBO - mapped object fill with data 
 	*/
 	public function find($entity,$id):ObjectBO;
 
@@ -44,7 +44,7 @@ interface Dao {
 	 * @since 1.0
 	 * @abstract
 	 * @access public
-	 * @param ObjectBO $entity - Object (entity) mapped on data base
+	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
 	 */
 	public function update(ObjectBO $entity);
 
@@ -54,7 +54,7 @@ interface Dao {
 	 * @since 1.0
 	 * @abstract
 	 * @access public
-	 * @param ObjectBO $entity - Object (entity) mapped on data base
+	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
 	 */
 	public function remove(ObjectBO $entity);
 
@@ -64,8 +64,8 @@ interface Dao {
 	 * @since 1.0
 	 * @abstract
 	 * @access public
-	 * @param ObjectBO $entity - Object (entity) mapped on data base
-	 * @return ObjectBO - Object (entity) mapped on data base after register on 
+	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
+	 * @return ttm\model\ObjectBO - Object (entity) mapped on data base after register on 
 	 * data base, that have all data on data base (example: auto-generated id)
 	 */
 	public function create(ObjectBO $entity):ObjectBO;
