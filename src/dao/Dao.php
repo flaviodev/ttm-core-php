@@ -71,13 +71,12 @@ interface Dao {
 	public function create(ObjectBO $entity):ObjectBO;
 
 	/**
-	 * @method Return entity manager corresponding orm api used
+	 * @method Create a instance of entity manager corresponding orm api used
 	 *
 	 * @since 1.0
 	 * @abstract
 	 * @access public
 	 * @param array $options - array of options to creation of entity manager
-	 * @return - Entity manager 
 	 */
 	public function getEntityManager(array $options=null);
 	
