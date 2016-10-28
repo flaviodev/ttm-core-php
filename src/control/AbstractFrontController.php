@@ -1,6 +1,8 @@
 <?php
 namespace ttm\control;
 
+use ttm\util\UtilDate;
+
 abstract class AbstractFrontController extends Rest {
 	private static $configFile = null;
 	private static $controllers = array();
@@ -72,10 +74,68 @@ abstract class AbstractFrontController extends Rest {
 		
 		if(!is_null($return)) {
 			$data = array();
-			$data['reply']= $return;
+			$data['reply']= $this->filterSendPropertiesReply($return);
 				
 			echo json_encode($data,false,JSON_UNESCAPED_UNICODE);
 		}
+	}
+	
+	private function filterSendPropertiesReply($data) {
+		if(is_array($data) || is_subclass_of($data, \ArrayAccess::class)) {
+			$arrayFO = array();
+			foreach ($data as $item) {
+				array_push($arrayFO, $this->getFilteredObjectSendPropertiesReply($item));
+			}
+			
+			return $arrayFO; 
+		} else {
+			return $this->getFilteredObjectSendPropertiesReply($data);
+		}
+	}
+	
+	private function getFilteredObjectSendPropertiesReply($data) {
+		if(is_null($data))
+			return;
+		
+		$filteredObject = new \stdClass();
+		
+		$reflectionObject = new \ReflectionObject($data);
+		
+		foreach ($reflectionObject->getProperties() as $prop) {
+			if(strpos($prop->getDocComment(), "@ttm-send")>-1) {
+				$property = $prop->getName();
+				
+				$function = $this->doMethod($property,"get");
+				if((int)method_exists($data,$function) > 0) {
+					$reflectionMethod = new \ReflectionMethod($data, $function);
+					
+					$value = $reflectionMethod->invoke($data, null);
+					
+					if(is_a($value, \DateTime::class)) {
+						$value = UtilDate::dateToString($value);
+					}
+				
+					$filteredObject->$property = $value; 
+				} else {
+					$function = $this->doMethod($property,"is");
+					if((int)method_exists($data,$function) > 0) {
+						$reflectionMethod = new \ReflectionMethod($data, $function);
+							
+						$value = $reflectionMethod->invoke($data, null);
+						$filteredObject->$property = $value;
+					}
+				}
+			}
+		}
+		
+		return $filteredObject;
+	}
+	
+	private function doMethod($propertyName, $sufix):string {
+		$firstLetter = substr($propertyName,0,1);
+		$wordRest = substr($propertyName,1);
+	
+		return $sufix.strtoupper($firstLetter).$wordRest;
 	}
 
 	private function processController($controllerName, $actionName) {

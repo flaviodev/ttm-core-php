@@ -4,6 +4,7 @@ namespace ttm\control;
 
 use ttm\control\ControlCRUD;
 use ttm\model\ObjectBO;
+use ttm\util\UtilDate;
 
 class ServiceHelper {
 	private $entityName;
@@ -61,7 +62,7 @@ class ServiceHelper {
 		$bo = new $this->entityName;
 		$this->parseObjectToBO($object,$bo);
 		
-		$bo->setId(null);
+		$bo->setId(0);
 		
 		return $bo;
 	}
@@ -77,7 +78,15 @@ class ServiceHelper {
 			$function = $this->doMethodSet($prop->getName());
 			if((int)method_exists($bo,$function) > 0) {
 				$reflectionMethod = new \ReflectionMethod($bo, $function);
-				$reflectionMethod->invokeArgs($bo, $prop->getValue());
+				$reflectionPar = $reflectionMethod->getParameters()[0];
+				
+				$value = $prop->getValue($object);
+				var_dump($reflectionPar->getType());
+				if(strcasecmp($reflectionPar->getType(),"DateTime")===0) {
+					$value = UtilDate::stringToDate($value);
+				}
+				
+				$reflectionMethod->invoke($bo, $value);
 			}
 		}
 	}
