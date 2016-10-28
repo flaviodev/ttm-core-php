@@ -5,12 +5,13 @@ namespace ttm\dto;
 use ttm\control\ControlCRUD;
 use ttm\model\ObjectBO;
 
-abstract class AbstractHelper {
+class ServiceHelper {
 	private $entityName;
 	private $crud;
 	
 	public function __construct($entityName, array $config) {
 		$this->entityName = $entityName;
+		
 		$this->crud = new ControlCRUD($entityName, $config);
 	}
 	
@@ -40,6 +41,7 @@ abstract class AbstractHelper {
 		
 		$bo = $this->crud->getEntity($object->id);
 		$this->updateBO($object,$bo);
+
 		$this->crud->updateEntity($bo);
 	}
 	
@@ -48,10 +50,43 @@ abstract class AbstractHelper {
 			return;
 		
 		$bo = $this->crud->getEntity($key);
+		
 		$this->crud->deleteEntity($bo);
 	}
 	
-	protected abstract function parseNewBO($object):ObjectBO;
-	protected abstract function updateBO($object,ObjectBO &$bo);
+	protected function parseNewBO($object):ObjectBO {
+		if(is_null($object))
+			return null;
+		
+		$bo = new $this->entityName;
+		$this->parseObjectToBO($object,$bo);
+		
+		$bo->setId(null);
+		
+		return $bo;
+	}
+
+	protected function updateBO($object,ObjectBO &$bo) {
+		$this->parseObjectToBO($object,$bo);
+	}
+
+	private function parseObjectToBO($object,ObjectBO &$bo) {
+		$reflectionObject = new \ReflectionObject($object);
+
+		foreach ($reflectionObject->getProperties() as $prop) {
+			$function = $this->doMethodSet($prop->getName());
+			if((int)method_exists($bo,$function) > 0) {
+				$reflectionMethod = new \ReflectionMethod($object, $function);
+				$reflectionMethod->invokeArgs($bo, $prop->getValue());
+			}
+		}
+	}
 	
+	
+	private function doMethodSet($propertyName):string {
+		$firstLetter = substr($propertyName,0,1);
+		$wordRest = substr($propertyName,1);
+		
+		return "set".strtoupper($firstLetter).$wordRest;
+	}
 }
