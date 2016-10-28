@@ -1,6 +1,6 @@
 <?php
 
-namespace ttm\dto;
+namespace ttm\control;
 
 use ttm\control\ControlCRUD;
 use ttm\model\ObjectBO;
