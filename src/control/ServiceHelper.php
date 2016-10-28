@@ -2,82 +2,74 @@
 
 namespace ttm\control;
 
-use ttm\control\ControlCRUD;
+use ttm\dao\DaoFactory;
 use ttm\model\ObjectBO;
 use ttm\util\UtilDate;
+use ttm\util\Util;
 
 class ServiceHelper {
-	private $entityName;
-	private $crud;
+	private $dao;
 
-	public function __construct($entityName, array $config) {
-		$this->entityName = $entityName;
-
-		$this->crud = new ControlCRUD($entityName, $config);
+	public function __construct(array $config) {
+		$this->dao =  DaoFactory::getInstance($config["dao"], $config);
 	}
 
-	public function getBO($key):ObjectBO {
-		if(is_null($key))
+	public function getEntity($entity,$id):ObjectBO {
+		if(is_null($id) || is_null($entity)){
 			return null;
+		}
 
-			return $this->crud->getEntity($key);
+		return $this->dao->find($entity, $id);
 	}
 
-	public function getBOs():array {
-		return $this->crud->getEntities();
-	}
-
-	public function create($object):ObjectBO {
-		if(is_null($object))
+	public function getEntities($entity):array {
+		if(is_null($entity)){
 			return null;
-
-			$bo = $this->parseNewBO($object);
-
-			return $this->crud->createEntity($bo);
+		}
+		
+		return $this->dao->findAll($entity);
 	}
 
-	public function update($object){
-		if(is_null($object))
+	public function createNewEntity($entity,$object):ObjectBO {
+		if(is_null($object) || is_null($entity)){
 			return null;
+		}
+		
+		$objectBO = new $entity;
+		$this->parseObjectToBO($object,$objectBO);
+		
+		$objectBO->setId(0);
+		
+		return $this->crud->createEntity($objectBO);
+	}
 
-			$bo = $this->crud->getEntity($object->id);
-			$this->updateBO($object,$bo);
+	public function updateEntity($entity,$object){
+		if(is_null($object) || is_null($entity) || !isset($object->id)){
+			return;
+		}
+		
+		$objectBO = $this->dao->find($entity,$object->id);
+		$this->parseObjectToBO($object,$objectBO);
 
-			$this->crud->updateEntity($bo);
+		$this->crud->updateEntity($objectBO);
 	}
 
 	public function delete($key) {
 		if(is_null($key))
 			return;
 
-			$bo = $this->crud->getEntity($key);
+			$objectBO = $this->crud->getEntity($key);
 
-			$this->crud->deleteEntity($bo);
+			$this->crud->deleteEntity($objectBO);
 	}
 
-	protected function parseNewBO($object):ObjectBO {
-		if(is_null($object))
-			return null;
-
-			$bo = new $this->entityName;
-			$this->parseObjectToBO($object,$bo);
-
-			$bo->setId(0);
-
-			return $bo;
-	}
-
-	protected function updateBO($object,ObjectBO &$bo) {
-		$this->parseObjectToBO($object,$bo);
-	}
-
-	private function parseObjectToBO($object,ObjectBO &$bo) {
+	private function parseObjectToBO($object,ObjectBO &$objectBO) {
 		$reflectionObject = new \ReflectionObject($object);
 
 		foreach ($reflectionObject->getProperties() as $prop) {
-			$function = $this->doMethodSet($prop->getName());
-			if((int)method_exists($bo,$function) > 0) {
-				$reflectionMethod = new \ReflectionMethod($bo, $function);
+			$function = Util::doMethodName($prop->getName(),"set");
+			if((int)method_exists($objectBO,$function) > 0) {
+				$reflectionMethod = new \ReflectionMethod($objectBO, $function);
 				$reflectionPar = $reflectionMethod->getParameters()[0];
 
 				$value = $prop->getValue($object);
@@ -85,16 +77,8 @@ class ServiceHelper {
 					$value = UtilDate::stringToDate($value);
 				}
 
-				$reflectionMethod->invoke($bo, $value);
+				$reflectionMethod->invoke($objectBO, $value);
 			}
 		}
-	}
-
-
-	private function doMethodSet($propertyName):string {
-		$firstLetter = substr($propertyName,0,1);
-		$wordRest = substr($propertyName,1);
-
-		return "set".strtoupper($firstLetter).$wordRest;
 	}
 }

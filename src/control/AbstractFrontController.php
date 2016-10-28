@@ -2,6 +2,7 @@
 namespace ttm\control;
 
 use ttm\util\UtilDate;
+use ttm\util\Util;
 
 abstract class AbstractFrontController extends Rest {
 	private static $configFile = null;
@@ -102,10 +103,10 @@ abstract class AbstractFrontController extends Rest {
 		$reflectionObject = new \ReflectionObject($data);
 		
 		foreach ($reflectionObject->getProperties() as $prop) {
-			if(strpos($prop->getDocComment(), "@ttm-DtoAtribute")>-1) {
+			if(strpos($prop->getDocComment(), "@ttm-DtoAttribute")>-1) {
 				$property = $prop->getName();
 				
-				$function = $this->doMethod($property,"get");
+				$function = Util::doMethodName($property,"get");
 				if((int)method_exists($data,$function) > 0) {
 					$reflectionMethod = new \ReflectionMethod($data, $function);
 					
@@ -117,7 +118,7 @@ abstract class AbstractFrontController extends Rest {
 				
 					$filteredObject->$property = $value; 
 				} else {
-					$function = $this->doMethod($property,"is");
+					$function = Util::doMethodName($property,"is");
 					if((int)method_exists($data,$function) > 0) {
 						$reflectionMethod = new \ReflectionMethod($data, $function);
 							
@@ -129,13 +130,6 @@ abstract class AbstractFrontController extends Rest {
 		}
 		
 		return $filteredObject;
-	}
-	
-	private function doMethod($propertyName, $sufix):string {
-		$firstLetter = substr($propertyName,0,1);
-		$wordRest = substr($propertyName,1);
-	
-		return $sufix.strtoupper($firstLetter).$wordRest;
 	}
 
 	private function processController($controllerName, $actionName) {
