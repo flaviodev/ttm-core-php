@@ -102,7 +102,7 @@ abstract class AbstractFrontController extends Rest {
 		$reflectionObject = new \ReflectionObject($data);
 		
 		foreach ($reflectionObject->getProperties() as $prop) {
-			if(strpos($prop->getDocComment(), "@ttm-send")>-1) {
+			if(strpos($prop->getDocComment(), "@ttm-DtoAtribute")>-1) {
 				$property = $prop->getName();
 				
 				$function = $this->doMethod($property,"get");
