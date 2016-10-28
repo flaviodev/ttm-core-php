@@ -18,7 +18,6 @@ class ServiceHelper {
 		if(is_null($id) || is_null($entity)){
 			return null;
 		}
-
 		return $this->dao->find($entity, $id);
 	}
 
@@ -26,7 +25,7 @@ class ServiceHelper {
 		if(is_null($entity)){
 			return null;
 		}
-		
+
 		return $this->dao->findAll($entity);
 	}
 
@@ -34,24 +33,24 @@ class ServiceHelper {
 		if(is_null($object) || is_null($entity)){
 			return null;
 		}
-		
+
 		$objectBO = new $entity;
 		$this->parseObjectToBO($object,$objectBO);
-		
+
 		$objectBO->setId(0);
-		
-		return $this->crud->createEntity($objectBO);
+
+		return $this->dao->create($objectBO);
 	}
 
 	public function updateEntity($entity,$object){
 		if(is_null($object) || is_null($entity) || !isset($object->id)){
 			return;
 		}
-		
+
 		$objectBO = $this->dao->find($entity,$object->id);
 		if (!is_null($objectBO)) {
 			$this->parseObjectToBO($object,$objectBO);
-			$this->crud->updateEntity($objectBO);
+			$this->dao->update($objectBO);
 		}
 	}
 
@@ -59,7 +58,7 @@ class ServiceHelper {
 		if(is_null($id) || is_null($entity)){
 			return;
 		}
-		
+
 		$objectBO = $this->dao->find($entity, $id);
 
 		if (!is_null($objectBO)) {
