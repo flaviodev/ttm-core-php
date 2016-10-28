@@ -5,7 +5,7 @@ namespace ttm\dto;
 use ttm\control\ControlCRUD;
 use ttm\model\ObjectBO;
 
-abstract class AbstractAux {
+abstract class AbstractHelper {
 	private $entityName;
 	private $crud;
 	
