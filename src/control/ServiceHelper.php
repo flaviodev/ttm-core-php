@@ -76,7 +76,7 @@ class ServiceHelper {
 		foreach ($reflectionObject->getProperties() as $prop) {
 			$function = $this->doMethodSet($prop->getName());
 			if((int)method_exists($bo,$function) > 0) {
-				$reflectionMethod = new \ReflectionMethod($object, $function);
+				$reflectionMethod = new \ReflectionMethod($bo, $function);
 				$reflectionMethod->invokeArgs($bo, $prop->getValue());
 			}
 		}
