@@ -2,40 +2,21 @@
 namespace ttm\util;
 
 class UtilDate {
-	
-	private static $formatDate = "Y-m-d";
-	private static $formatDateTime = "Y-m-d H:i:s.u";
-	
-	public static function dateToString(\DateTime $dateTime):string {
+		
+	public static function dateToString(\DateTime $dateTime ,string $formatDate = "Y-m-d"):string {
 		if(is_null($dateTime)) 
 			return null;
 			
-		return $dateTime->format(static::$formatDate);
+		return $dateTime->format($formatDate);
 	}
 
-	public static function stringToDate(string $stringDate):\DateTime {
-// 		$dateTime = new \DateTime();
-
-// 		$year = substr($stringDateYmd, 0,4);
-// 		$month = substr($stringDateYmd, 5,2);
-// 		$day = substr($stringDateYmd, 8,2);
-		
-// 		$dateTime->setDate($year, $month, $day);
+	public static function stringToDate(string $stringDate, string $formatDateTime = "Y-m-d H:i:s.u"):\DateTime {
 
 		if(is_null($stringDate))
 			return null;
 
 		$stringDate.=" 00:00:00.000000";
 		
-		return date_create_from_format(static::$formatDateTime, $stringDate);
-
-	}
-	
-	
-	static function doMethodName($propertyName, $prefix):string {
-		$firstLetter = substr($propertyName,0,1);
-		$wordRest = substr($propertyName,1);
-	
-		return $prefix.strtoupper($firstLetter).$wordRest;
+		return date_create_from_format($formatDateTime, $stringDate);
 	}
 }
