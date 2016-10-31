@@ -89,7 +89,7 @@ abstract class AbstractFrontController extends Rest {
 		if(!is_null($service)) {
 			
 			//validating whether service implements the associated interface
-			if(is_subclass_of($service, $serviceInterfaceName)) {
+			if(!is_subclass_of($service, $serviceInterfaceName)) {
 				throw new TTMException("The service dont implements the associated interface");
 			} 
 			
@@ -129,7 +129,7 @@ abstract class AbstractFrontController extends Rest {
 		$command = $this->locateCommand($commandAlias);
 		if(!is_null($command)) {
 			//checking whether command implements the Command interface
-			if(is_subclass_of($command, Command::class)) {
+			if(!is_subclass_of($command, Command::class)) {
 				throw new TTMException("The command dont implements the \\ttm\\control\\Command");
 			}
 				
@@ -257,13 +257,17 @@ abstract class AbstractFrontController extends Rest {
 
 					// creating array of arguements for invonking service
 					$args = array();
-					$i=0;
-					foreach ($input as $value) {
-						// whether parameter arrived encapsulated on secong level of the input array
-						if(is_array($value)) {
-							$args[$i++] = $value[0];
-						} else {
-							$args[$i++] = $value;
+
+					if(!is_null($input)) {
+						// creating array of arguements for invonking service
+						$i=0;
+						foreach ($input as $value) {
+							// whether parameter arrived encapsulated on secong level of the input array
+							if(is_array($value)) {
+								$args[$i++] = $value[0];
+							} else {
+								$args[$i++] = $value;
+							}
 						}
 					}
 					
