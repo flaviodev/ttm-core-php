@@ -22,7 +22,8 @@ interface Dao {
 	 * @param $id - primary key for find register on data base
 	 * @return ttm\model\ObjectBO - mapped object fill with data
 	 *  
-     * @abstract @access public 
+     * @abstract 
+     * @access public 
      * @since 1.0
 	*/
 	public function find($entity,$id):ObjectBO;
@@ -34,7 +35,8 @@ interface Dao {
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @return array - mapped objects fill with data
 	 * 
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
      * @since 1.0
 	 */
 	public function findAll($entity):array;
@@ -54,7 +56,8 @@ interface Dao {
 	 *
 	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
 	 * 
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
 	 * @since 1.0
 	 */
 	public function remove(ObjectBO $entity);
@@ -66,7 +69,8 @@ interface Dao {
 	 * @return ttm\model\ObjectBO - Object (entity) mapped on data base after register on 
 	 * data base, that have all data on data base (example: auto-generated id)
 	 * 
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
 	 * @since 1.0
 	 */
 	public function create(ObjectBO $entity):ObjectBO;
@@ -77,7 +81,8 @@ interface Dao {
 	 *
 	 * @param array $options - array of options to creation of entity manager
 	 * 
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
 	 * @since 1.0
 	 */
 	public function getEntityManager(array $options=null);

@@ -298,7 +298,8 @@ abstract class AbstractFrontController extends Rest {
 	 * @throws InvalidArgumentException - No service registered for this service interface
 	 * @throws TTMException - Error on instance of the service
 	 * 
-	 * @access public @abstract
+	 * @access public 
+	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function locateService($serviceInterfaceName);
@@ -316,7 +317,8 @@ abstract class AbstractFrontController extends Rest {
 	 *
 	 * @throws InvalidArgumentException - The service interface alias can't be null
 	 *
-	 * @access public @abstract
+	 * @access public 
+	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function solveServiceInterfaceAlias($serviceInterfaceAlias);
@@ -336,7 +338,8 @@ abstract class AbstractFrontController extends Rest {
 	 * @throws InvalidArgumentException - No command registered for this command alias
 	 * @throws TTMException - Error on instance of the command
 	 *
-	 * @access public @abstract
+	 * @access public 
+	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function locateCommand($commandAlias);
