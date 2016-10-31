@@ -1,6 +1,6 @@
 <?php
 
-namespace ttm\util;
+namespace ttm\exception;
 
 class TTMException extends \Exception {
 	
