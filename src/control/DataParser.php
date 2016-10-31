@@ -53,10 +53,11 @@ interface DataParser {
 	 * @throws InvalidArgumentException - whether paramater $object is null
 	 * @throws InvalidArgumentException - whether parameter &$objectBO is null
 	 * 
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
 	 * @since 1.0
 	 */
-	public abstract function parseObjectToBO($object,ObjectBO &$objectBO);
+	public function parseObjectToBO($object,ObjectBO &$objectBO);
 
 	/**
 	 * @method parseObjectBOToObject - parses the business object to a simple output
@@ -70,8 +71,9 @@ interface DataParser {
 	 *
 	 * @throws InvalidArgumentException - whether $objectBO is null
 	 *
-	 * @abstract @access public
+	 * @abstract 
+	 * @access public
 	 * @since 1.0
 	 */
-	public abstract function parseObjectBOToObject(ObjectBO $objectBO);
+	public function parseObjectBOToObject(ObjectBO $objectBO);
 }
