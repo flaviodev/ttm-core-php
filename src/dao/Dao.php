@@ -15,68 +15,70 @@ use ttm\model\ObjectBO;
 interface Dao {
 	
 	/**
-	 * @method Return a mapped object on data base (orm) corresponding to a type of 
+	 * @method find - finds the mapped object on data base (orm) corresponding to a type of 
 	 * class (entity) and a id informed
 	 *
-     * @since 1.0
-     * @abstract
-	 * @access public
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @param $id - primary key for find register on data base
-	 * @return ttm\model\ObjectBO - mapped object fill with data 
+	 * @return ttm\model\ObjectBO - mapped object fill with data
+	 *  
+     * @abstract @access public 
+     * @since 1.0
 	*/
 	public function find($entity,$id):ObjectBO;
 
 	/**
-	 * @method Return all mapped objects on data base (orm) corresponding to a type of class (entity)
+	 * @method findAll - finds all mapped objects on data base (orm) corresponding 
+	 * to a type of class (entity)
 	 * 
-     * @since 1.0
-     * @abstract
-	 * @access public
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @return array - mapped objects fill with data
+	 * 
+	 * @abstract @access public
+     * @since 1.0
 	 */
 	public function findAll($entity):array;
 
 	/**
-	 * @method Update data base register associated to mapped entity 
+	 * @method update - updates data base register associated to mapped entity 
 	 *
-	 * @since 1.0
-	 * @abstract
-	 * @access public
 	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
+	 * 
+	 * @abstract @access public
+	 * @since 1.0
 	 */
 	public function update(ObjectBO $entity);
 
 	/**
-	 * @method Remove (delete) data base register associated to mapped entity
+	 * @method remove - removes (delete) data base register associated to mapped entity
 	 *
-	 * @since 1.0
-	 * @abstract
-	 * @access public
 	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
+	 * 
+	 * @abstract @access public
+	 * @since 1.0
 	 */
 	public function remove(ObjectBO $entity);
 
 	/**
-	 * @method Create (insert) data base register associated to mapped entity
+	 * @method create - creates (insert) data base register associated to mapped entity
 	 *
-	 * @since 1.0
-	 * @abstract
-	 * @access public
 	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
 	 * @return ttm\model\ObjectBO - Object (entity) mapped on data base after register on 
 	 * data base, that have all data on data base (example: auto-generated id)
+	 * 
+	 * @abstract @access public
+	 * @since 1.0
 	 */
 	public function create(ObjectBO $entity):ObjectBO;
 
 	/**
-	 * @method Create a instance of entity manager corresponding orm api used
+	 * @method getEntityManager - creates a instance of entity manager corresponding 
+	 * orm api used
 	 *
-	 * @since 1.0
-	 * @abstract
-	 * @access public
 	 * @param array $options - array of options to creation of entity manager
+	 * 
+	 * @abstract @access public
+	 * @since 1.0
 	 */
 	public function getEntityManager(array $options=null);
 	
