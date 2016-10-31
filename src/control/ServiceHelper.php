@@ -2,12 +2,9 @@
 
 namespace ttm\control;
 
+use ttm\Config;
 use ttm\dao\DaoFactory;
 use ttm\model\ObjectBO;
-use ttm\util\UtilDate;
-use ttm\util\Util;
-use ttm\Config;
-use ttm\exception\DaoException;
 
 class ServiceHelper {
 	private $dao;
