@@ -25,10 +25,10 @@ interface DataParser {
 	 * @param $inputData - input data for parsing
 	 * @return parsed data
 	 *
-	 * @abstract @access public
+	 * @access public
 	 * @since 1.0
 	 */
-	public abstract function parseInputData($inputData);
+	public function parseInputData($inputData);
 
 	/**
 	 * @method parseOutputData - parses the output data to type of data treated by layer view
@@ -36,10 +36,10 @@ interface DataParser {
 	 * @param $outputData - output data for parsing
 	 * @return parsed data
 	 * 
-	 * @abstract @access public
+	 * @access public
 	 * @since 1.0
 	 */
-	public abstract function parseOutputData($outputData);
+	public function parseOutputData($outputData);
 
 	/**
 	 * @method parseObjectToBO - parses the intput object to a business object (model). This
@@ -53,7 +53,6 @@ interface DataParser {
 	 * @throws InvalidArgumentException - whether paramater $object is null
 	 * @throws InvalidArgumentException - whether parameter &$objectBO is null
 	 * 
-	 * @abstract 
 	 * @access public
 	 * @since 1.0
 	 */
@@ -71,7 +70,6 @@ interface DataParser {
 	 *
 	 * @throws InvalidArgumentException - whether $objectBO is null
 	 *
-	 * @abstract 
 	 * @access public
 	 * @since 1.0
 	 */
