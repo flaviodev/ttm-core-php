@@ -1,33 +1,45 @@
 <?php
 namespace ttm\control;
 
-/*
- * File : Rest.inc.php
- * Author : Arun Kumar Sekar
+/**
+ * @author : Arun Kumar Sekar
+ * 
+ * Class Rest - Implementation of a Full Rest on PHP 
+ *
+ * @package ttm-core-php
+ * @namespace ttm\control
+ * @version 1.0
  */
 class Rest {
+	
 	public $_allow = array();
 	public $_content_type = "application/json";
 	public $_request = array();
 	private $_method = "";
 	private $_code = 200;
+	private $_charset = "utf8";
+	
 	public function __construct() {
 		$this->inputs();
 	}
+	
 	public function get_referer() {
 		return $_SERVER['HTTP_REFERER'];
 	}
+	
 	public function response( $data, $status ) {
 		$this->_code = ( $status )?$status:200;
 		$this->set_headers();
 		echo $data;
 		exit;
 	}
+	
 	public function json( $data ) {
 		if ( is_array( $data ) ) {
 			return json_encode( $data );
 		}
 	}
+	
 	private function get_status_message() {
 		$status = array(
 				100 => 'Continue',
@@ -73,9 +85,11 @@ class Rest {
 				505 => 'HTTP Version Not Supported' );
 		return ( $status[$this->_code] ) ? $status[$this->_code] : $status[500];
 	}
+	
 	public function get_request_method() {
 		return $_SERVER['REQUEST_METHOD'];
 	}
+	
 	private function inputs() {
 		switch ( $this->get_request_method() ) {
 			case "POST":
@@ -94,6 +108,7 @@ class Rest {
 				break;
 		}
 	}
+	
 	private function cleanInputs( $data ) {
 		$clean_input = array();
 		if ( is_array( $data ) ) {
@@ -109,9 +124,11 @@ class Rest {
 		}
 		return $clean_input;
 	}
+	
 	private function set_headers() {
 		header( "HTTP/1.1 ".$this->_code." ".$this->get_status_message() );
 		header( "Content-Type:".$this->_content_type );
+		header( "charset:".$this->_charset);
 	}
 }
 ?>
