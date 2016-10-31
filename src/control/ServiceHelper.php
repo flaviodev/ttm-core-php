@@ -6,6 +6,8 @@ use ttm\dao\DaoFactory;
 use ttm\model\ObjectBO;
 use ttm\util\UtilDate;
 use ttm\util\Util;
+use ttm\Config;
+use ttm\exception\DaoException;
 
 class ServiceHelper {
 	private $dao;
@@ -35,7 +37,7 @@ class ServiceHelper {
 		}
 
 		$objectBO = new $entity;
-		$this->parseObjectToBO($object,$objectBO);
+		Config::getDataParser()->parseObjectToBO($object,$objectBO);
 
 		$objectBO->setId(0);
 
@@ -49,7 +51,7 @@ class ServiceHelper {
 
 		$objectBO = $this->dao->find($entity,$object->id);
 		if (!is_null($objectBO)) {
-			$this->parseObjectToBO($object,$objectBO);
+			Config::getDataParser()->parseObjectToBO($object,$objectBO);
 			$this->dao->update($objectBO);
 		}
 	}
@@ -63,25 +65,6 @@ class ServiceHelper {
 
 		if (!is_null($objectBO)) {
 			$this->dao->remove($objectBO);
-		}
-	}
-
-	private function parseObjectToBO($object,ObjectBO &$objectBO) {
-		$reflectionObject = new \ReflectionObject($object);
-
-		foreach ($reflectionObject->getProperties() as $prop) {
-			$function = Util::doMethodName($prop->getName(),"set");
-			if((int)method_exists($objectBO,$function) > 0) {
-				$reflectionMethod = new \ReflectionMethod($objectBO, $function);
-				$reflectionPar = $reflectionMethod->getParameters()[0];
-
-				$value = $prop->getValue($object);
-				if(strcasecmp($reflectionPar->getType(),"DateTime")===0) {
-					$value = UtilDate::stringToDate($value);
-				}
-
-				$reflectionMethod->invoke($objectBO, $value);
-			}
 		}
 	}
 }
