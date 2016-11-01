@@ -41,22 +41,22 @@ final class ServiceHelper {
 	}
 	
 	//TODO implements
-	public function getCriteria($entity,$attribute, $expression):array{
+	public function getCriteria($entity, $attribute, $expression):array {
 		$this->doEntityValidation($entity);
 		
 		return $this->dao->findAll($entity);
 	}
 	
-	public function create($entity,$object):Model{
+	public function create($entity,$object):Model {
 		$this->doEntityValidation($entity);
 		$this->doObjectValidation($object);
 		
-		$Model = new $entity;
-		Config::getDataParser()->parseObjectToBO($object,$Model);
+		$model = new $entity();
+		Config::getDataParser()->parseObjectToBO($object,$model);
 		
-		$Model->setId(0);
+		$model->setId(0);
 		
-		return $this->dao->create($Model);
+		return $this->dao->create($model);
 	}
 	
 	public function update($entity,$object){
@@ -64,26 +64,26 @@ final class ServiceHelper {
 		$this->doObjectValidation($object);
 
 		if(!isset($object->id)){
-			throw new \InvalidArgumentException("The object id shoul be setted ");
+			throw new \InvalidArgumentException("The object id should be setted");
 		}
 		
-		$Model = $this->dao->find($entity,$object->id);
+		$model = $this->dao->find($entity,$object->id);
 		
-		$this->doReturnedObjectValidation($Model,$entity,$object->id,"updating");
+		$this->doReturnedObjectValidation($model,$entity,$object->id,"updating");
 				
-		Config::getDataParser()->parseObjectToBO($object,$Model);
-		$this->dao->update($Model);
+		Config::getDataParser()->parseObjectToBO($object,$model);
+		$this->dao->update($model);
 	}
 	
 	public function delete($entity,$id){
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 				
-		$Model = $this->dao->find($entity, $id);
+		$model = $this->dao->find($entity, $id);
 
-		$this->doReturnedObjectValidation($Model,$entity,$id,"deleting");
+		$this->doReturnedObjectValidation($model,$entity,$id,"deleting");
 		
-		$this->dao->remove($Model);
+		$this->dao->remove($model);
 	}
 
 	//validations
@@ -91,7 +91,7 @@ final class ServiceHelper {
 	
 	private function doEntityValidation($entity) {
 		if(is_null($entity)){
-			throw new \InvalidArgumentException("The entity can't be null ");
+			throw new \InvalidArgumentException("The entity can't be null");
 		}
 	
 // 		if(!is_subclass_of($entity, Model::class)) {
@@ -99,15 +99,15 @@ final class ServiceHelper {
 // 		}
 	}
 	
-	private function doReturnedObjectValidation($Model,$entity,$id,$operation) {
-		if(is_null($Model)){
-			throw new TTMException("Object $entity:($id) not found for $operation");
+	private function doReturnedObjectValidation($model,$entity,$id,$operation) {
+		if(is_null($model)){
+			throw new TTMException("Object ".$entity.":(".$id.") not found for ".$operation);
 		}
 	}
 	
 	private function doIdValidation($id) {
 		if(is_null($id)){
-			throw new \InvalidArgumentException("The id can't be null ");
+			throw new \InvalidArgumentException("The id can't be null");
 		}
 	}
 

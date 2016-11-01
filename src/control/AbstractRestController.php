@@ -380,13 +380,13 @@ abstract class AbstractRestController extends Rest {
 
 			$serviceHelper = ServiceHelper::getInstance($this->getDaoConfig());
 			$requestMethod = $this->get_request_method(); 
-			
-			
+
 			$args = array();
+			array_push($args, $model);
+			
 			switch ($requestMethod) {
 				case "GET": {
 					$method = null;
-					array_push($args, $model);
 					
 					if(is_null($requestParameter)){
 						$method = "getAll";
