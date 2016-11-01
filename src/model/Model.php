@@ -1,11 +1,10 @@
 <?php
 namespace ttm\model;
 
-abstract class ObjectBOIntId extends ObjectBO {
+abstract class Model {
+	public abstract function getId();
 	
-	public abstract function getId():int;
-	
-	public abstract function setId(int $id);
+	public abstract function setId($id);
 }
 
 ?>

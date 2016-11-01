@@ -3,7 +3,7 @@ namespace ttm\control;
 
 use ttm\Config;
 use ttm\exception\TTMException;
-use ttm\model\ObjectBO;
+use ttm\model\Model;
 use ttm\exception\RestExcpetion;
 
 /**
@@ -186,7 +186,7 @@ abstract class AbstractRestController extends Rest {
 		if(!is_null($model)) {
 				
 			//checking whether command implements the Command interface
-			if(!is_subclass_of($model, ObjectBO::class)) {
+			if(!is_subclass_of($model, Model::class)) {
 				throw new TTMException("The command dont implements the \\ttm\\control\\Command");
 			}
 				

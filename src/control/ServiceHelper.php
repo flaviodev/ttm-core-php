@@ -4,7 +4,7 @@ namespace ttm\control;
 
 use ttm\Config;
 use ttm\dao\DaoFactory;
-use ttm\model\ObjectBO;
+use ttm\model\Model;
 use ttm\exception\TTMException;
 
 final class ServiceHelper {
@@ -30,7 +30,7 @@ final class ServiceHelper {
 		$this->dao =  DaoFactory::getInstance($config["dao"], $config);
 	}
 
-	public function get($entity, $id):ObjectBO{
+	public function get($entity, $id):Model{
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 	
@@ -50,16 +50,16 @@ final class ServiceHelper {
 		return $this->dao->findAll($entity);
 	}
 	
-	public function create($entity,$object):ObjectBO{
+	public function create($entity,$object):Model{
 		$this->doEntityValidation($entity);
 		$this->doObjectValidation($object);
 		
-		$objectBO = new $entity;
-		Config::getDataParser()->parseObjectToBO($object,$objectBO);
+		$Model = new $entity;
+		Config::getDataParser()->parseObjectToBO($object,$Model);
 		
-		$objectBO->setId(0);
+		$Model->setId(0);
 		
-		return $this->dao->create($objectBO);
+		return $this->dao->create($Model);
 	}
 	
 	public function update($entity,$object){
@@ -70,23 +70,23 @@ final class ServiceHelper {
 			throw new \InvalidArgumentException("The object id shoul be setted ");
 		}
 		
-		$objectBO = $this->dao->find($entity,$object->id);
+		$Model = $this->dao->find($entity,$object->id);
 		
-		$this->doReturnedObjectValidation($objectBO,$entity,$object->id,"updating");
+		$this->doReturnedObjectValidation($Model,$entity,$object->id,"updating");
 				
-		Config::getDataParser()->parseObjectToBO($object,$objectBO);
-		$this->dao->update($objectBO);
+		Config::getDataParser()->parseObjectToBO($object,$Model);
+		$this->dao->update($Model);
 	}
 	
 	public function delete($entity,$id){
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 				
-		$objectBO = $this->dao->find($entity, $id);
+		$Model = $this->dao->find($entity, $id);
 
-		$this->doReturnedObjectValidation($objectBO,$entity,$id,"deleting");
+		$this->doReturnedObjectValidation($Model,$entity,$id,"deleting");
 		
-		$this->dao->remove($objectBO);
+		$this->dao->remove($Model);
 	}
 
 	//validations
@@ -97,13 +97,13 @@ final class ServiceHelper {
 			throw new \InvalidArgumentException("The entity can't be null ");
 		}
 	
-		if(!is_subclass_of($entity, ObjectBO::class)) {
-			throw new \InvalidArgumentException("The entity '$entity' should be an ObjectBO!");
+		if(!is_subclass_of($entity, Model::class)) {
+			throw new \InvalidArgumentException("The entity '$entity' should be an Model!");
 		}
 	}
 	
-	private function doReturnedObjectValidation($objectBO,$entity,$id,$operation) {
-		if(is_null($objectBO)){
+	private function doReturnedObjectValidation($Model,$entity,$id,$operation) {
+		if(is_null($Model)){
 			throw new TTMException("Object $entity:($id) not found for $operation");
 		}
 	}

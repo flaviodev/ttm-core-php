@@ -1,7 +1,7 @@
 <?php
 namespace ttm\dao;
 
-use ttm\model\ObjectBO;
+use ttm\model\Model;
 
 /**
  * Interface DAO - Data Access Object. It's used for interface (uncouple)
@@ -20,13 +20,13 @@ interface Dao {
 	 *
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @param $id - primary key for find register on data base
-	 * @return ttm\model\ObjectBO - mapped object fill with data
+	 * @return ttm\model\Model - mapped object fill with data
 	 *  
      * @abstract 
      * @access public 
      * @since 1.0
 	*/
-	public function find($entity,$id):ObjectBO;
+	public function find($entity,$id):Model;
 
 	/**
 	 * @method findAll - finds all mapped objects on data base (orm) corresponding 
@@ -44,36 +44,36 @@ interface Dao {
 	/**
 	 * @method update - updates data base register associated to mapped entity 
 	 *
-	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
+	 * @param ttm\model\Model $entity - Object (entity) mapped on data base
 	 * 
 	 * @abstract @access public
 	 * @since 1.0
 	 */
-	public function update(ObjectBO $entity);
+	public function update(Model $entity);
 
 	/**
 	 * @method remove - removes (delete) data base register associated to mapped entity
 	 *
-	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
+	 * @param ttm\model\Model $entity - Object (entity) mapped on data base
 	 * 
 	 * @abstract 
 	 * @access public
 	 * @since 1.0
 	 */
-	public function remove(ObjectBO $entity);
+	public function remove(Model $entity);
 
 	/**
 	 * @method create - creates (insert) data base register associated to mapped entity
 	 *
-	 * @param ttm\model\ObjectBO $entity - Object (entity) mapped on data base
-	 * @return ttm\model\ObjectBO - Object (entity) mapped on data base after register on 
+	 * @param ttm\model\Model $entity - Object (entity) mapped on data base
+	 * @return ttm\model\Model - Object (entity) mapped on data base after register on 
 	 * data base, that have all data on data base (example: auto-generated id)
 	 * 
 	 * @abstract 
 	 * @access public
 	 * @since 1.0
 	 */
-	public function create(ObjectBO $entity):ObjectBO;
+	public function create(Model $entity):Model;
 
 	/**
 	 * @method getEntityManager - creates a instance of entity manager corresponding 

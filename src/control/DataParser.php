@@ -2,7 +2,7 @@
 
 namespace ttm\control;
 
-use ttm\model\ObjectBO;
+use ttm\model\Model;
 
 
 /**
@@ -48,30 +48,30 @@ interface DataParser {
 	 * and dates)   
 	 *
 	 * @param $object - view data input for parsing
-	 * @param &$objectBO - reference of business object for setting parsed data
+	 * @param &$Model - reference of business object for setting parsed data
 	 *
 	 * @throws InvalidArgumentException - whether paramater $object is null
-	 * @throws InvalidArgumentException - whether parameter &$objectBO is null
+	 * @throws InvalidArgumentException - whether parameter &$Model is null
 	 * 
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseObjectToBO($object,ObjectBO &$objectBO);
+	public function parseObjectToBO($object,Model &$Model);
 
 	/**
-	 * @method parseObjectBOToObject - parses the business object to a simple output
+	 * @method parseModelToObject - parses the business object to a simple output
 	 * data on standard layer view (DTO - data transport object). 
 	 * Such as parseObjectToBO method, this mechanism promotes also a dynamic and centered 
 	 * parsing, but now of the business object to a handle object on layer view, setting 
 	 * attributes and converting data types (ex: numbers and dates)
 	 *
-	 * @param $objectBO - business object input for parsing
+	 * @param $Model - business object input for parsing
 	 * @return - object with parsed data
 	 *
-	 * @throws InvalidArgumentException - whether $objectBO is null
+	 * @throws InvalidArgumentException - whether $Model is null
 	 *
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseObjectBOToObject(ObjectBO $objectBO);
+	public function parseModelToObject(Model $Model);
 }
