@@ -4,7 +4,7 @@ namespace ttm\control;
 use ttm\Config;
 use ttm\exception\TTMException;
 use ttm\model\Model;
-use ttm\exception\RestExcpetion;
+use ttm\exception\RestException;
 
 /**
  * @author flaviodev - Flávio de Souza TTM/ITS - fdsdev@gmail.com
@@ -184,10 +184,9 @@ abstract class AbstractRestController extends Rest {
 		// locating service
 		$model = $this->solveModelAlias($modelAlias);
 		if(!is_null($model)) {
-				
 			//checking whether command implements the Command interface
 			if(!is_subclass_of($model, Model::class)) {
-				throw new TTMException("The command dont implements the \\ttm\\control\\Command");
+				throw new TTMException("The model dont implements the \\ttm\\model\\Model");
 			}
 				
 			// keeping loaded service
@@ -258,12 +257,12 @@ abstract class AbstractRestController extends Rest {
 		try {
 			
 			if(is_null($commandAlias)) {
-				throw new RestExcpetion("The command alias can't be null",500);
+				throw new RestException("The command alias can't be null",500);
 			}
 			
 			$requestMethod = $this->get_request_method();
 			if($requestMethod!="GET" && $requestMethod!="POST") {
-				throw new RestExcpetion("HTTP method should be GET or POST",405);
+				throw new RestException("HTTP method should be GET or POST",405);
 			}
 		
 			$args = array();
@@ -281,7 +280,7 @@ abstract class AbstractRestController extends Rest {
 			$return = $this->invoke($command, "execute", $args, true);
 						
 			$this->response($parser->parseOutputData($return),200);
-		} catch (RestExcpetion $re) {
+		} catch (RestException $re) {
 			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
 		} catch (\Exception $e) {
 			$this->response($parser->parseOutputData($e->getMessage()),500);
@@ -310,16 +309,16 @@ abstract class AbstractRestController extends Rest {
 		$parser = Config::getDataParser();
 		
 		if(is_null($serviceInterfaceAlias)) {
-			throw new RestExcpetion("The service interface alias can't be null",500);
+			throw new RestException("The service interface alias can't be null",500);
 		}
 
 		if(is_null($methodName)) {
-			throw new RestExcpetion("The service method name can't be null",500);
+			throw new RestException("The service method name can't be null",500);
 		}
 
 		$requestMethod = $this->get_request_method();
 		if($requestMethod!="GET" && $requestMethod!="POST") { 
-			throw new RestExcpetion("HTTP method should be GET or POST",405);
+			throw new RestException("HTTP method should be GET or POST",405);
 		}
 		
 		try {
@@ -341,7 +340,7 @@ abstract class AbstractRestController extends Rest {
 			$return = $this->invoke($service, $methodName, $args);
 				
 			$this->response($parser->parseOutputData($return),200);
-		} catch (RestExcpetion $re) {
+		} catch (RestException $re) {
 			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
 		} catch (\Exception $e) {
 			$this->response($parser->parseOutputData($e->getMessage()),500);
@@ -367,10 +366,6 @@ abstract class AbstractRestController extends Rest {
 	private function processRestService($modelAlias, $requestParameter) {
 		$parser = Config::getDataParser();
 		try {
-			if(is_null($modelAlias)) {
-				throw new RestExcpetion("The model alias can't be null",500);
-			}
-			
 			$model = $this->getModel($modelAlias);
 			$serviceHelper = ServiceHelper::getInstance($this->getDaoConfig());
 			$requestMethod = $this->get_request_method(); 
@@ -435,7 +430,7 @@ abstract class AbstractRestController extends Rest {
 				
 				case "DELETE": {
 					if(!is_numeric($requestParameter)){
-						throw new RestExcpetion("The parameter for deleting should numeric", 500);
+						throw new RestException("The parameter for deleting should numeric", 500);
 					}
 
 					//id
@@ -449,10 +444,10 @@ abstract class AbstractRestController extends Rest {
 				}
 				
 				default: {
-					throw new RestExcpetion("HTTP method invalid",405);
+					throw new RestException("HTTP method invalid",405);
 				}
 			}
-		} catch (RestExcpetion $re) {
+		} catch (RestException $re) {
 			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
 		} catch (\Exception $e) {
 			$this->response($parser->parseOutputData($e->getMessage()),500);
