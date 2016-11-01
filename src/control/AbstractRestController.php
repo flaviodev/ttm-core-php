@@ -173,22 +173,23 @@ abstract class AbstractRestController extends Rest {
 	 */
 	protected function getModel($modelAlias) {
 		if(is_null($modelAlias)) {
-			throw new \InvalidArgumentException("The model alias name can't be null");
+			throw new \InvalidArgumentException("The model alias can't be null");
 		}
 	
 		// checking whether service already called
 		if(isset(AbstractRestController::$models[$modelAlias])) {
-			return static::$models[$modelAlias];
+			return AbstractRestController::$models[$modelAlias];
 		}
 	
 		// locating service
 		$model = $this->solveModelAlias($modelAlias);
+		
 		if(!is_null($model)) {
-			//checking whether command implements the Command interface
-			if(!is_subclass_of($model, Model::class)) {
-				throw new TTMException("The model dont implements the \\ttm\\model\\Model");
-			}
-				
+// 			//checking whether command implements the Command interface
+// 			if(!is_subclass_of(new $model, Model::class)) {
+// 				throw new TTMException("The $model dont implements the \\ttm\\model\\Model");
+// 			}
+			
 			// keeping loaded service
 			AbstractRestController::$models[$modelAlias] = $model;
 		}
@@ -209,34 +210,43 @@ abstract class AbstractRestController extends Rest {
 	 * @since 1.0
 	 */
 	public function processRequest() {
-		//name of a service interface or 'command'(fixed text)
-		$resource = null;
-		
-		//name of the service method or alias of command  
-		$resourceComplement = null;
-		
-		$partsOfRequest = array_filter(str_getcsv($_REQUEST['request'],"/"));
-		
-		$resource = null;$
-		$resourceComplement=null;
-		$resourceArgs = null;
-		
-		if(!is_null($partsOfRequest) && sizeof($partsOfRequest)>=2) {
-			$resource = $partsOfRequest[0]; 
-			$resourceComplement = $partsOfRequest[1];
+
+		try {
+
+			//name of a service interface or 'command'(fixed text)
+			$resource = null;
 			
-			if(sizeof($partsOfRequest)>2) {
-				$resourceArgs = array_slice($partsOfRequest, 2);
+			//name of the service method or alias of command  
+			$resourceComplement = null;
+			$resourceArgs = null;
+			
+			if(!strpos($_REQUEST['request'], "/")) {
+				$resource = $_REQUEST['request'];
+			} else {
+				$partsOfRequest = array_filter(str_getcsv($_REQUEST['request'],"/"));
+				
+				if(!is_null($partsOfRequest) && sizeof($partsOfRequest)>=2) {
+					$resource = $partsOfRequest[0]; 
+					$resourceComplement = $partsOfRequest[1];
+					
+					if(sizeof($partsOfRequest)>2) {
+						$resourceArgs = array_slice($partsOfRequest, 2);
+					}
+				}
 			}
-		}
-		
-		// the first parameter defines the type of process
-		if($resource == "command") {
-			$this->processCommand($resourceComplement,$resourceArgs);
-		} else if($resource == "service") {
-			$this->processService($resource, $resourceComplement,$resourceArgs);
-		} else {
-			$this->processRestService($resource, $resourceComplement);
+			
+			// the first parameter defines the type of process
+			if($resource == "command") {
+				$this->processCommand($resourceComplement,$resourceArgs);
+			} else if($resource == "service") {
+				$this->processService($resource, $resourceComplement,$resourceArgs);
+			} else {
+				$this->processRestService($resource, $resourceComplement);
+			}
+		} catch (\Exception $e) {
+			$this->response($e, 500);
+		} catch (\Error $err) {
+			$this->response($err, 500);
 		}
 	}
 	
@@ -367,11 +377,12 @@ abstract class AbstractRestController extends Rest {
 		$parser = Config::getDataParser();
 		try {
 			$model = $this->getModel($modelAlias);
+
 			$serviceHelper = ServiceHelper::getInstance($this->getDaoConfig());
 			$requestMethod = $this->get_request_method(); 
 			
-			$args = array();
 			
+			$args = array();
 			switch ($requestMethod) {
 				case "GET": {
 					$method = null;
@@ -395,8 +406,8 @@ abstract class AbstractRestController extends Rest {
 					}
 					
 					$this->cleanInputs($args);
-					$return = $this->invoke($serviceHelper, $method,$args);
-
+					$return = $this->invoke($serviceHelper,$method,$args);
+					
 					if(is_null($return)) {
 						$this->response(null,204);
 					} else {
