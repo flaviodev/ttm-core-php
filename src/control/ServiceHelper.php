@@ -52,7 +52,7 @@ final class ServiceHelper {
 		$this->doObjectValidation($object);
 		
 		$model = new $entity();
-		Config::getDataParser()->parseObjectToBO($object,$model);
+		Config::getDataParser()->parseObjectToModel($object,$model);
 		
 		$model->setId(0);
 		
@@ -71,7 +71,7 @@ final class ServiceHelper {
 		
 		$this->doReturnedObjectValidation($model,$entity,$object->id,"updating");
 				
-		Config::getDataParser()->parseObjectToBO($object,$model);
+		Config::getDataParser()->parseObjectToModel($object,$model);
 		$this->dao->update($model);
 	}
 	
