@@ -2,7 +2,7 @@
 
 namespace ttm\exception;
 
-class RestExcpetion extends TTMException {
+class RestException extends TTMException {
 	
 	protected $httpStatus;
 	
