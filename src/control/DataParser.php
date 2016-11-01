@@ -56,7 +56,7 @@ interface DataParser {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseObjectToBO($object,Model &$Model);
+	public function parseObjectToModel($object,Model &$Model);
 
 	/**
 	 * @method parseModelToObject - parses the business object to a simple output

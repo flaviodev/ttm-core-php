@@ -106,7 +106,7 @@ class DtoJsonDataParser implements DataParser {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseObjectToBO($object,Model &$Model){
+	public function parseObjectToModel($object,Model &$Model){
 		if(is_null($object)) {
 			throw new \InvalidArgumentException("Input object can't be null");
 		}
