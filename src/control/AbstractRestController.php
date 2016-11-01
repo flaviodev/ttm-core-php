@@ -182,7 +182,7 @@ abstract class AbstractRestController extends Rest {
 		}
 	
 		// locating service
-		$model = $this->locateModel($modelAlias);
+		$model = $this->solveModelAlias($modelAlias);
 		if(!is_null($model)) {
 				
 			//checking whether command implements the Command interface
@@ -578,7 +578,7 @@ abstract class AbstractRestController extends Rest {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public abstract function locateModel($modelAlias);
+	public abstract function solveModelAlias($modelAlias);
 
 	
 	/**
