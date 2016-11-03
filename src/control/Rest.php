@@ -109,20 +109,21 @@ class Rest {
 		}
 	}
 	
-	protected function cleanInputs( $data ) {
+	protected function cleanInputs($data) {
 		$clean_input = array();
-		if ( is_array( $data ) ) {
-			foreach ( $data as $k => $v ) {
-				$clean_input[$k] = $this->cleanInputs( $v );
+		if ( is_array($data)) {
+			foreach ($data as $k => $v) {
+				$clean_input[$k] = $this->cleanInputs($v);
 			}
 		} else {
-			if ( get_magic_quotes_gpc() ) {
-				$data = trim( stripslashes( $data ) );
+			if (get_magic_quotes_gpc()) {
+				$data = trim(stripslashes($data));
 			}
-			$data = strip_tags( $data );
-			$clean_input = trim( $data );
+			$data = strip_tags($data);
+			$clean_input = filter_var(trim($data),FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 		}
-		return $clean_input;
+		return $clean_input; 
+		
 	}
 	
 	private function set_headers() {
