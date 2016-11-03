@@ -13,7 +13,6 @@ namespace ttm\model;
  * @version 1.0
  */
 abstract class Model {
-	
 	/**
 	 * @method getId - return the entity id (of mapped attribute on concrete class)
 	 *

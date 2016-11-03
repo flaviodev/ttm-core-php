@@ -14,6 +14,4 @@ namespace ttm\exception;
  * @namespace ttm\exception
  * @version 1.0
  */
-class TTMException extends \Exception {
-	
-}
+class TTMException extends \Exception {}

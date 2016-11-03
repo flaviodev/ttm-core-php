@@ -1,4 +1,5 @@
 <?php
+
 namespace ttm\control;
 
 use ttm\Config;
@@ -100,11 +101,11 @@ abstract class AbstractRestController extends Rest {
 	 * @method __construct - override of parent constructor method to not invoke 
      * your behavior  
 	 *
-	 * @access protected
+	 * @access public
 	 * @magic
 	 * @since 1.0
 	 */
-	protected function __construct() {
+	public function __construct() {
 		
 	}
 	
@@ -715,6 +716,6 @@ abstract class AbstractRestController extends Rest {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public abstract function getDaoConfig();
+	public abstract function getDaoConfig():array;
 }
 

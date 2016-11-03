@@ -107,10 +107,11 @@ abstract class Config {
 	 * @since 1.0
 	 */
 	private static function getConfig() {
-		if(Config::$config==null)
+		if(Config::$config==null) {
 			Config::$config = json_decode(file_get_contents(__DIR__."/config.json"));
+		}
 	
-			return Config::$config;
+		return Config::$config;
 	}
 
 	/**

@@ -13,7 +13,6 @@ namespace ttm\util;
  * @version 1.0
  */
 abstract class Util {
-	
 	/**
 	 * @method doMethodName - generates name methods for reflection invocating (getter/setter)
 	 *

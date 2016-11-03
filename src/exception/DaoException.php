@@ -13,5 +13,4 @@ namespace ttm\exception;
  * @namespace ttm\exception
  * @version 1.0
  */
-class DaoException extends TTMException {
-}
+class DaoException extends TTMException {}
