@@ -4,19 +4,20 @@ namespace ttm\dao;
 use ttm\model\Model;
 
 /**
- * Interface DAO - Data Access Object. It's used for interface (uncouple)
+ * @author flaviodev - Flávio de Souza TTM/ITS - fdsdev@gmail.com
+ * 
+ * Interface DAO - Data Access Object. It's used for interface (uncoupled)
  * components for comunication with de integration tier
  *
- * @author flaviodev - Flávio de Souza - fdsdev@gmail.com
- * @version 1.0
  * @package ttm-core-php
  * @namespace ttm\dao
+ * @version 1.0
  */
 interface Dao {
 	
 	/**
 	 * @method find - finds the mapped object on data base (orm) corresponding to a type of 
-	 * class (entity) and a id informed
+	 * class (entity of model) and a id informed
 	 *
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @param $id - primary key for find register on data base
@@ -75,16 +76,31 @@ interface Dao {
 	 */
 	public function create(Model $entity):Model;
 
+	
 	/**
-	 * @method getEntityManager - creates a instance of entity manager corresponding 
-	 * orm api used
+	 * @method getResult - returns registers associated to mapped entity based on a query
+	 * on entity manager
 	 *
-	 * @param array $options - array of options to creation of entity manager
-	 * 
-	 * @abstract 
+	 * @param string $entityQuery - query (select) using the orm standards on implemented api 
+	 * @param array $parameters - array of parameter for query
+	 * @return a collection with objects (entity) returned by query
+	 *
+	 * @abstract
 	 * @access public
 	 * @since 1.0
-	 */
-	public function getEntityManager(array $options=null);
+	 **/	
+	public function getResult(string $entityQuery, array $parameters);
 	
+ 	/**
+	 * @method getResultSet - returns an array of the registers on database using a
+	 * sql query
+	 *
+	 * @param string $sql - a select using sql
+	 * @param array $parameters - array of parameter for query
+	 * @return an array with the data returned by query
+	 *
+	 * @access public
+	 * @since 1.0
+	 **/
+	public function getResultSet(string $sql, array $parameters=null);
 }
