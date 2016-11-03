@@ -133,7 +133,7 @@ class DtoJsonDataParser implements DataParser {
 				$value = $prop->getValue($object);
 				// whether paramter is a Date, make conversion 
 				if(strcasecmp($reflectionPar->getType(),"DateTime")===0) {
-					$value = UtilDate::stringToDate($value);
+					$value = new \DateTime($value);
 				}
 		
 				// invoking setter method with input value
@@ -185,9 +185,9 @@ class DtoJsonDataParser implements DataParser {
 					$value = $reflectionMethod->invoke($Model, null);
 		
 					// checking the value, whether is a date make conversion
-					if(is_a($value, \DateTime::class)) {
-						$value = UtilDate::dateToString($value);
-					}
+// 					if(is_a($value, \DateTime::class)) {
+// 						$value = UtilDate::dateToString($value);
+// 					}
 		
 					$objectDTO->$property = $value;
 				} else {
