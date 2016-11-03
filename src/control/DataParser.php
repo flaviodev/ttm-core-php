@@ -26,6 +26,7 @@ interface DataParser {
 	 * @return parsed data
 	 *
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public function parseInputData($inputData);
@@ -37,6 +38,7 @@ interface DataParser {
 	 * @return parsed data
 	 * 
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public function parseOutputData($outputData);
@@ -54,6 +56,7 @@ interface DataParser {
 	 * @throws InvalidArgumentException - whether parameter &$Model is null
 	 * 
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public function parseObjectToModel($object,Model &$Model);
@@ -71,6 +74,7 @@ interface DataParser {
 	 * @throws InvalidArgumentException - whether $Model is null
 	 *
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public function parseModelToObject(Model $Model);

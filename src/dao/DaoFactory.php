@@ -14,6 +14,7 @@ use ttm\exception\TTMException;
  *
  * @package ttm-core-php
  * @namespace ttm\dao
+ * 
  * @final
  * @version 1.0
  */
@@ -46,22 +47,22 @@ final class DaoFactory {
 	 *
 	 * on this way is possible found the dao using an alias, as well as, the entity name
 	 *
-	 * @param array $configs - has the options and configurations for creating the concrete
+	 * @param array $daoConfig - has the options and configurations for creating the concrete
 	 * classes of Dao
 	 * @return an array of concrete implementations of Dao correnponding passed configuration
 	 * 
-	 * @throws InvalidArgumentException - whether $configs is null
+	 * @throws InvalidArgumentException - whether $daoConfig is null
 	 * 
 	 * @access public
 	 * @static
 	 * @since 1.0
 	 */
-	 public function getInstance(array $configs) {
-		if(is_null($configs)) {
-			throw new \InvalidArgumentException("The array of configs for DaoFactory can't be null (DaoFactory:".__LINE__.")");
+	 public static function getInstance(array $daoConfig) {
+		if(is_null($daoConfig)) {
+			throw new \InvalidArgumentException("The array of dao config can't be null [DaoFactory:".__LINE__."]");
 		}
 		
-		foreach ($configs as $alias=>$config) {
+		foreach ($daoConfig as $alias=>$config) {
 			// checking whether service already called
 			if(!isset(DaoFactory::$daos[$alias])) {
 				$dao = DaoFactory::create($config['dao'],$config);
@@ -100,9 +101,20 @@ final class DaoFactory {
 	}
 	
 	/**
+	 * @method __construct - prevents create a new instance without using static method
+	 *
+	 * @access protect
+	 * @magic
+	 * @since 1.0
+	 */
+	protected function __construct() {}
+	
+	
+	/**
 	 * @method __clone - prevents cloning on this instance  
 	 *
  	 * @access private
+ 	 * @magic
 	 * @since 1.0
 	 */
 	private function __clone() {}
@@ -111,6 +123,7 @@ final class DaoFactory {
 	 * @method __wakeup - prevents unserialize on this instance
 	 *
 	 * @access private
+	 * @magic
 	 * @since 1.0
 	 */
 	private function __wakeup() {}

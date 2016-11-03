@@ -9,9 +9,10 @@ namespace ttm\util;
  *
  * @package ttm-core-php
  * @namespace ttm\util
+ * @abstract
  * @version 1.0
  */
-class Util {
+abstract class Util {
 	
 	/**
 	 * @method doMethodName - generates name methods for reflection invocating (getter/setter)

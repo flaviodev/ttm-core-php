@@ -4,7 +4,6 @@ namespace ttm\control\dataparser;
 
 use ttm\control\DataParser;
 use ttm\util\Util;
-use ttm\util\UtilDate;
 use ttm\model\Model;
 
 /**
@@ -60,8 +59,8 @@ class DtoJsonDataParser implements DataParser {
 		if(is_array($outputData) || is_subclass_of($outputData, \ArrayAccess::class)) {
 			$arrayFO = array();
 			foreach ($outputData as $item) {
-				// checking whether the item is a business object
-				if(is_subclass_of($item, Model::class)) {
+				// checking whether the item is a model object
+				if($item instanceof  Model) {
 					array_push($arrayFO, $this->parseModelToObject($item));
 				} else {
 					array_push($arrayFO, $item);
@@ -70,8 +69,8 @@ class DtoJsonDataParser implements DataParser {
 		
 			return $this->mountReturn($arrayFO);
 		} else {
-			// checking whether the output data is a business object
-			if(is_subclass_of($outputData, Model::class)) {
+			// checking whether the output data is a model object
+			if($item instanceof  Model) {
 				return $this->mountReturn($this->parseModelToObject($outputData));
 			}	
 			
@@ -93,8 +92,8 @@ class DtoJsonDataParser implements DataParser {
 	}
 
 	/**
-	 * @method parseObjectToBO - implements method to parse the intput object to a business 
-	 * object (model). Using reflection for setting the data of input object to a reference 
+	 * @method parseObjectToBO - implements method to parse the intput object to a 'business 
+	 * object' (model). Using reflection for setting the data of input object to a reference 
 	 * of a business object, usually for creating or update a register on data base. 
 	 *
 	 * @param $object - stdClass input data for parsing
@@ -108,11 +107,11 @@ class DtoJsonDataParser implements DataParser {
 	 */
 	public function parseObjectToModel($object,Model &$Model){
 		if(is_null($object)) {
-			throw new \InvalidArgumentException("Input object can't be null");
+			throw new \InvalidArgumentException("Input object can't be null [DtoJsonDataParser:".__LINE__."]");
 		}
 		
 		if(is_null($Model)) {
-			throw new \InvalidArgumentException("Reference of the output Model can't be null");
+			throw new \InvalidArgumentException("Reference of the output Model can't be null [DtoJsonDataParser:".__LINE__."]");
 		}
 		
 		$reflectionObject = new \ReflectionObject($object);
@@ -154,22 +153,22 @@ class DtoJsonDataParser implements DataParser {
 	 * sent on reply, dont sending for examples attribuites used on collection mapping (orm). 
 	 * This filter uses a anotation in attributes (@ttm-DtoAttribute) that should be sent. 
 	 *
-	 * @param $Model - business object input for parsing
+	 * @param $model - business object input for parsing
 	 * @return - object dto with parsed data
 	 * 
-	 * @throws InvalidArgumentException - whether $Model is null
+	 * @throws InvalidArgumentException - whether $model is null
 	 *
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseModelToObject(Model $Model){
-		if(is_null($Model)) {
-			throw new \InvalidArgumentException("Model can't be null");
+	public function parseModelToObject(Model $model){
+		if(is_null($model)) {
+			throw new \InvalidArgumentException("Model can't be null [DtoJsonDataParser:".__LINE__."]");
 		}
 		
 		$objectDTO = new \stdClass();
 		
-		$reflectionObject = new \ReflectionObject($Model);
+		$reflectionObject = new \ReflectionObject($model);
 		
 		// getting properties of business object
 		foreach ($reflectionObject->getProperties() as $prop) {
@@ -179,24 +178,19 @@ class DtoJsonDataParser implements DataParser {
 		
 				// assembling getter method
 				$function = Util::doMethodName($property,"get");
-				if((int)method_exists($Model,$function) > 0) {
-					$reflectionMethod = new \ReflectionMethod($Model, $function);
+				if((int)method_exists($model,$function) > 0) {
+					$reflectionMethod = new \ReflectionMethod($model, $function);
 		
-					$value = $reflectionMethod->invoke($Model, null);
-		
-					// checking the value, whether is a date make conversion
-// 					if(is_a($value, \DateTime::class)) {
-// 						$value = UtilDate::dateToString($value);
-// 					}
+					$value = $reflectionMethod->invoke($model, null);
 		
 					$objectDTO->$property = $value;
 				} else {
 					// same process where attribute is a boolean type 
 					$function = Util::doMethodName($property,"is");
-					if((int)method_exists($Model,$function) > 0) {
-						$reflectionMethod = new \ReflectionMethod($Model, $function);
+					if((int)method_exists($model,$function) > 0) {
+						$reflectionMethod = new \ReflectionMethod($model, $function);
 		
-						$value = $reflectionMethod->invoke($Model, null);
+						$value = $reflectionMethod->invoke($model, null);
 						$objectDTO->$property = $value;
 					}
 				}

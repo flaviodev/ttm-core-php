@@ -11,6 +11,7 @@ use ttm\model\Model;
  *
  * @package ttm-core-php
  * @namespace ttm\dao
+ * @abstract
  * @version 1.0
  */
 interface Dao {
@@ -23,8 +24,8 @@ interface Dao {
 	 * @param $id - primary key for find register on data base
 	 * @return ttm\model\Model - mapped object fill with data
 	 *  
-     * @abstract 
      * @access public 
+     * @abstract 
      * @since 1.0
 	*/
 	public function find($entity,$id):Model;
@@ -36,8 +37,8 @@ interface Dao {
 	 * @param $entity - class of object (entity) mapped on data base
 	 * @return array - mapped objects fill with data
 	 * 
-	 * @abstract 
 	 * @access public
+	 * @abstract 
      * @since 1.0
 	 */
 	public function findAll($entity):array;
@@ -57,8 +58,8 @@ interface Dao {
 	 *
 	 * @param ttm\model\Model $entity - Object (entity) mapped on data base
 	 * 
-	 * @abstract 
 	 * @access public
+	 * @abstract 
 	 * @since 1.0
 	 */
 	public function remove(Model $entity);
@@ -70,8 +71,8 @@ interface Dao {
 	 * @return ttm\model\Model - Object (entity) mapped on data base after register on 
 	 * data base, that have all data on data base (example: auto-generated id)
 	 * 
-	 * @abstract 
 	 * @access public
+	 * @abstract 
 	 * @since 1.0
 	 */
 	public function create(Model $entity):Model;
@@ -85,8 +86,8 @@ interface Dao {
 	 * @param array $parameters - array of parameter for query
 	 * @return a collection with objects (entity) returned by query
 	 *
-	 * @abstract
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 **/	
 	public function getResult(string $entityQuery, array $parameters);
@@ -100,6 +101,7 @@ interface Dao {
 	 * @return an array with the data returned by query
 	 *
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 **/
 	public function getResultSet(string $sql, array $parameters=null);

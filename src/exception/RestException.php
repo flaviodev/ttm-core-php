@@ -32,6 +32,7 @@ class RestException extends TTMException {
 	 * @param $httpStatus - http status for sending to cliente
 	 *
 	 * @access public
+	 * @magic
 	 * @since 1.0
 	 */
 	public function __construct($message, $httpStatus) {
@@ -45,7 +46,7 @@ class RestException extends TTMException {
 	 *
 	 * @return http status for sending to client
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 1.0
 	 */
 	public function getHttpStatus() {
@@ -57,7 +58,7 @@ class RestException extends TTMException {
 	 *
 	 * @param $httpStatus - http status for sending to client
 	 *
-	 * @access protected
+	 * @access public
 	 * @since 1.0
 	 */
 	public function setHttpStatus($httpStatus) {

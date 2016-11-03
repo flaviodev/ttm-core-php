@@ -19,8 +19,8 @@ abstract class Model {
 	 *
 	 * @return entity id (primary key)
 	 *
-	 * @abstract
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function getId();
@@ -30,8 +30,8 @@ abstract class Model {
 	 *
 	 * @param $id - entity id (primary key)
 	 *
-	 * @abstract
 	 * @access public
+	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function setId($id);
