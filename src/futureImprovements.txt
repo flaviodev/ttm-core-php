@@ -1,0 +1,10 @@
+Future Improvements
+
+- composite key find handle
+- pool of connections configurations
+- login mechanism
+- reports generation using jasper
+- session control
+- internationalization
+- handle validations
+- access control 
