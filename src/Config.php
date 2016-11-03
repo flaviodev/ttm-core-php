@@ -27,6 +27,15 @@ abstract class Config {
 	private static $config=null;
 
 	/**
+	 * @property $parser - keeps the single instance of the DataParser implementation
+	 *
+	 * @access private
+	 * @static
+	 * @since 1.0
+	 */
+	private static $parser=null;
+	
+	/**
 	 * @property $CRUDHelper - keeps the single instance of the CRUDHelper implementation
 	 *
 	 * @access private
@@ -47,9 +56,13 @@ abstract class Config {
 	 * @since 1.0
 	 */
 	public static function getDataParser():DataParser {
-		$parserName = Config::getConfig()->dataParser;
+		if(is_null(Config::$parser)) {
+			$parserName = Config::getConfig()->dataParser;
+
+			Config::$parser = new $parserName();
+		}
 		
-		return new $parserName();
+		return Config::$parser;
 	}
 
 	/**
