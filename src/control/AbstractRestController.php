@@ -9,17 +9,31 @@ use ttm\exception\RestException;
 /**
  * @author flaviodev - Flávio de Souza TTM/ITS - fdsdev@gmail.com
  * 
- * Abstract Class AbstractFrontController - Reuseble component that encapsulates requisitions treatment
- * of web services. Using the patterns of friendly URL: 
+ * Abstract Class AbstractRestController - Reuseble component that encapsulates 
+ * requisitions treatment of web services by RESTFul. Using the patterns of a 
+ * 'friendly' URL  (URI) to require resouces to web server: 
  * 
- * /contextaplication/serviceInterfaceAlias/method
- * and 
- * /contextaplication/command/commandAlias 
+ * services:
+ * /contextaplication/service/serviceInterfaceAlias/method/param1/param2/../paramN
  * 
- * where the parametters are send by POST http method. 
+ * commands:
+ * /contextaplication/command/commandAlias/param1/param2/../paramN
+ * 
+ * REST Services:
+ * /contextaplication/modelAlias/param1 
+ * 
+ * where the parametters may be send also using POST http method. 
+ *
+ * these names approuche the services concepts designed to this architecture, are basically
+ * three types of service:
+ *  - services: type of service that can promete changes on data 
+ *  - commands:  type of service thar just process data and return the output information
+ *  - REST service: is a spacial type of services for treatment crud operations required 
+ *    by http methods, associating the resource (modelAlias) to a model class.
  *
  * Simple tree of events sequence:
- * leve - method
+ * 
+ * level - method
  * 1- processRequest
  *    2- processCommand
  *       3- getCommand
@@ -34,7 +48,18 @@ use ttm\exception\RestException;
  *       3- invoke
  *          4- parseInputData
  *          4- parseOutputData 
- * 
+ *    2- processRestService
+ *       3- getModel
+ *          4- solveModelAlias
+ *       3- getCRUDHelper
+ *       3- identify The HTTP method
+ *       3- prepare parameters
+ *       3- invoke CRUDHelper method for requested HTTP method
+ *          4- parseInputData
+ *          4- parseOutputData  
+ *           
+ * @see Rest
+ *           
  * @package ttm-core-php
  * @namespace ttm\control
  * @abstract
@@ -42,62 +67,65 @@ use ttm\exception\RestException;
  */
 abstract class AbstractRestController extends Rest {
 	/**
-	 * @property $commands - it's the attribute associated with the flyweight pattern that 
-	 * store the commands associated with your respective alias as they are called.
+	 * @property $commands - stores the commands associated with 
+	 * your respective alias as they are called.
 	 *
-	 * @static @access private
+	 * @access private
+	 * @static 
 	 * @since 1.0
 	 */
 	private static $commands = array();
 
 	/**
-	 * @property $services - it's the attribute associated with the flyweight pattern that 
-	 * store the concrete services (facades) associated with your respective interfaces as 
-	 * they are called.
+	 * @property $services - stores the concrete services (facades) associated 
+	 * with your respective interfaces as they are called.
 	 * 
-	 * @static @access private
+	 * @access private
+	 * @static
 	 * @since 1.0 
 	 */
 	private static $services = array();
 
 	/**
-	 * @property $services - it's the attribute associated with the flyweight pattern that
-	 * store the concrete services (facades) associated with your respective interfaces as
-	 * they are called.
+	 * @property $models - stores the model classes (entities) associated with 
+	 * your respective model alias they are called.
 	 *
-	 * @static @access private
+	 * @access private
+	 * @static 
 	 * @since 1.0
 	 */
 	private static $models = array();
 
 	/**
-	 * @method __construct - override of parente constructor method to not invoke that  
+	 * @method __construct - override of parent constructor method to not invoke 
+     * your behavior  
 	 *
-	 * @access public
+	 * @access protected
+	 * @magic
 	 * @since 1.0
 	 */
-	public function __construct() {
+	protected function __construct() {
 		
 	}
 	
 	/**
 	 * @method getCommand - this method is responsible for seeking on
 	 * stored called commands a command associated with the passed command alias.
-	 * Wheter the command not found, the method locates the command and stores it. Validating
-	 * also whether the command implements \ttm\control\Command.
+	 * Whether the command not found, the method locates the command and stores it. 
+	 * Validating also whether the command implements \ttm\control\Command.
 	 *
 	 * @param $commandAlias - alias command for seeking/locating
-	 * @return object (instance) of required command
+	 * @return instance of required command
 	 *
 	 * @throws InvalidArgumentException - whether $commandAlias is null
-	 * @throws TTMException - whether the returned command dont implements the \ttm\control\Command
+	 * @throws TTMException - whether the required command don't implements the \ttm\control\Command
 	 *
 	 * @access protected
 	 * @since 1.0
 	 */
 	protected function getCommand($commandAlias) {
 		if(is_null($commandAlias)) {
-			throw new \InvalidArgumentException("The command alias can't be null");
+			throw new \InvalidArgumentException("The command alias can't be null [AbstractRestController:".__LINE__."]");
 		}
 	
 		//checking whether command already called
@@ -110,7 +138,7 @@ abstract class AbstractRestController extends Rest {
 		if(!is_null($command)) {
 			//checking whether command implements the Command interface
 			if(!is_subclass_of($command, Command::class)) {
-				throw new TTMException("The command dont implements the \\ttm\\control\\Command");
+				throw new TTMException("The command don't implements the \\ttm\\control\\Command [AbstractRestController:".__LINE__."]");
 			}
 	
 			// keeping command
@@ -137,7 +165,7 @@ abstract class AbstractRestController extends Rest {
 	 */
 	protected function getService($serviceInterfaceName) {
 		if(is_null($serviceInterfaceName)) {
-			throw new \InvalidArgumentException("The service interface name can't be null");
+			throw new \InvalidArgumentException("The service interface name can't be null [AbstractRestController:".__LINE__."]");
 		}
 		
 		// checking whether service already called
@@ -148,10 +176,9 @@ abstract class AbstractRestController extends Rest {
 		// locating service
 		$service = $this->locateService($serviceInterfaceName);
 		if(!is_null($service)) {
-			
 			//validating whether service implements the associated interface
 			if(!is_subclass_of($service, $serviceInterfaceName)) {
-				throw new TTMException("The service dont implements the associated interface");
+				throw new TTMException("The service dont implements the associated interface [AbstractRestController:".__LINE__."]");
 			} 
 			
 			// keeping loaded service
@@ -162,23 +189,22 @@ abstract class AbstractRestController extends Rest {
 	}
 	
 	/**
-	 * @method getService - this method is responsible for seeking on
-	 * stored called services a service associated with the passed interface name.
-	 * Whether the service not found, the method locates the service and stores it.
-	 * Validating also whether if the service implements the associated service interface.
+	 * @method getModel - this method is responsible for seeking on
+	 * stored called models a models associated with the passed model alias.
+	 * Whether the model not found, the method locates the model and stores it.
+	 * Used by CRUD operations on REST services required.
 	 *
-	 * @param $serviceInterfaceName - name of service interface for seeking/locating
-	 * @return object (instance) of required service
+	 * @param $modelAlias - alias of model class for seeking/locating
+	 * @return model class name of required alias
 	 *
-	 * @throws InvalidArgumentException - whether $serviceInterfaceName is null
-	 * @throws TTMException - whether the returned service dont implements the associated interface
+	 * @throws InvalidArgumentException - whether $modelAlias is null
 	 *
 	 * @access protected
 	 * @since 1.0
 	 */
 	protected function getModel($modelAlias) {
 		if(is_null($modelAlias)) {
-			throw new \InvalidArgumentException("The model alias can't be null");
+			throw new \InvalidArgumentException("The model alias can't be null [AbstractRestController:".__LINE__."]");
 		}
 	
 		// checking whether service already called
@@ -190,11 +216,6 @@ abstract class AbstractRestController extends Rest {
 		$model = $this->solveModelAlias($modelAlias);
 		
 		if(!is_null($model)) {
-// 			//checking whether command implements the Command interface
-// 			if(!is_subclass_of(new $model, Model::class)) {
-// 				throw new TTMException("The $model dont implements the \\ttm\\model\\Model");
-// 			}
-			
 			// keeping loaded service
 			AbstractRestController::$models[$modelAlias] = $model;
 		}
@@ -203,28 +224,33 @@ abstract class AbstractRestController extends Rest {
 	}
 	
 	/**
-	 * @method processRequest - when the client makes a server request, the .htaccess should be
-	 * redirect the request to a concrete implementation of this class. The first part of the
-	 * URL is the project that implements the front controller, the second part contains the 
-	 * sevice or command required. This second part is divide into two other: class and method 
-	 * that will be instantiated and invoked. So this method separates the parts of requested 
-	 * URL, creates the object instance and invokes the method.
-	 * @return - echo return of requested service/command  
-	 *
+	 * @method processRequest - when the client makes a server request, the .htaccess should 
+	 * beredirect the request to a concrete implementation of this class. The first part 
+	 * of the URI is the project that implements the rest controller, the second part 
+	 * contains the required resource, this second part is divide into another parts (complement
+	 * and resource arguments, like described on class comments). This method is responsible
+	 * to identify the type of required service and to solve the complement and arguments
+	 * for handling the client request and for involking necessary methods to mount the expected
+	 * response.
+	 * 
 	 * @access public
 	 * @since 1.0
 	 */
 	public function processRequest() {
-
 		try {
 
-			//name of a service interface or 'command'(fixed text)
+			// fixed types 'service' and 'command' or model alias 
 			$resource = null;
 			
-			//name of the service method or alias of command  
+			//ServiceInterfaceAlias, CommandAlias or RequestParameter of RestServices  
 			$resourceComplement = null;
+			
+			//NameMehod of a service or another paramenter for 
+			//services or commands (not RESTservices) 
 			$resourceArgs = null;
 			
+			// broking URI for defining the type service and solve 
+			// another parts (based on type service)
 			if(!strpos($_REQUEST['request'], "/")) {
 				$resource = $_REQUEST['request'];
 			} else {
@@ -240,35 +266,58 @@ abstract class AbstractRestController extends Rest {
 				}
 			}
 			
-			// the first parameter defines the type of process
+			// defining the type of process and delegating to handlers
 			if($resource == "command") {
-				$this->processCommand($resourceComplement,$resourceArgs);
+				// solving command process parameters
+				$commandAlias = $resourceComplement;
+				
+				$this->processCommand($commandAlias,$resourceArgs);
 			} else if($resource == "service") {
-				$this->processService($resource, $resourceComplement,$resourceArgs);
+				// solving service process parameters
+				$serviceInterfaceAlias = $resourceComplement;
+				$methodName = $resourceArgs[0];
+				$resourceArgs = array_slice($resourceArgs, 1);
+				
+				$this->processService($serviceInterfaceAlias,$methodName,$resourceArgs);
 			} else {
-				$this->processRestService($resource, $resourceComplement);
+				// solving rest service process parameters
+				$modelAlias = $resource;
+				$requestParameter = $resourceComplement;
+				
+				$this->processRESTService($modelAlias, $requestParameter);
 			}
+		} catch (TTMException $ttme) {
+			// on ttm exceptions show the message 
+			$this->response($ttme->getMessage(), 500);
 		} catch (\Exception $e) {
-			$this->response($e, 500);
+			// on general exceptions show the trace
+			$this->response($e->getMessage(), 500);
 		} catch (\Error $err) {
-			$this->response($err, 500);
+			// on errors show the trace
+			$this->response($err->getMessage(), 500);
 		}
 	}
 	
 	/**
-	 * @method processCommand - encapsulates the location and invocation of a command request.
-	 * The command should implements the \ttm\controlCommand interface.
+	 * @method processCommand - encapsulates handle of the location and invocation 
+	 * of a command request. The command should implement the
+	 * \ttm\controlCommand interface. (usually request for getting reports)
 	 *
 	 * @param $commandAlias - alias of the command
+	 * @param $resourceArgs - arguments for invoking the required command
+	 * 
 	 * @return reply of the command invocation
 	 *
-	 * @throws InvalidArgumentException - whether $commandAlias is null
+	 * @throws RestException - whether $commandAlias is null
+	 * @throws RestException - whether http method isent GET or POST
 	 *
 	 * @access private
 	 * @since 1.0
 	 */
 	private function processCommand($commandAlias,$resourceArgs) {
+		// getting configured parser input/output handle
 		$parser = Config::getDataParser();
+		
 		try {
 			
 			if(is_null($commandAlias)) {
@@ -280,20 +329,28 @@ abstract class AbstractRestController extends Rest {
 				throw new RestException("HTTP method should be GET or POST",405);
 			}
 		
+			// setting parameters for invoking command
 			$args = array();
 			if(!is_null($resourceArgs)) {
 				array_push($args, $resourceArgs);
 			}
-				
-			$inputArgs = $this->getInputPost();
-			if(!is_null($inputArgs)) {
-				array_push($args, $inputArgs);
+			
+			// whether request method is POST setting input on 
+			// paramenters for invoking command
+			if($requestMethod=="POST") {
+				$inputArgs = $this->getInputPost();
+				if(!is_null($inputArgs)) {
+					array_push($args, $inputArgs);
+				}
 			}
 
 			$this->cleanInputs($args);
+			
+			// involking required command
 			$command = $this->getCommand($commandAlias);
 			$return = $this->invoke($command, "execute", $args, true);
 						
+			// sending response of command invoke
 			$this->response($parser->parseOutputData($return),200);
 		} catch (RestException $re) {
 			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
@@ -302,25 +359,27 @@ abstract class AbstractRestController extends Rest {
 		} catch (\Error $err) {
 			$this->response($parser->parseOutputData($err->getMessage()),500);
 		}
-		
-		
-		
 	}
 
 	/**
-	 * @method processService - encapsulates the location and invocation of a service request    
+	 * @method processService - encapsulates handle of the location and invocation 
+	 * of a service request (usually associated a business rule)    
 	 *
 	 * @param $serviceInterfaceAlias - alias of the service interface
 	 * @param $methodName - name of the method for invoking 
+	 * @param $resourceArgs - arguments for invoking the required service
+	 * 
 	 * @return reply of the service method invocation
 	 *
-	 * @throws InvalidArgumentException - whether $serviceInterfaceAlias is null
-	 * @throws InvalidArgumentException - whether $methodName is null
+	 * @throws RestException - whether $serviceInterfaceAlias is null
+	 * @throws RestException - whether $methodName is null
+	 * @throws RestException - whether http method isent GET or POST
 	 * 
 	 * @access private
 	 * @since 1.0
 	 */
 	private function processService($serviceInterfaceAlias, $methodName, $resourceArgs) {
+		// getting configured parser input/output handle
 		$parser = Config::getDataParser();
 		
 		if(is_null($serviceInterfaceAlias)) {
@@ -336,6 +395,7 @@ abstract class AbstractRestController extends Rest {
 			throw new RestException("HTTP method should be GET or POST",405);
 		}
 		
+		// setting parameters for invoking service
 		try {
 			$args = array();
 			
@@ -343,17 +403,25 @@ abstract class AbstractRestController extends Rest {
 				array_push($args, $resourceArgs);
 			}
 			
-			$inputArgs = $this->getInputPost();
-			if(!is_null($inputArgs)) {
-				array_push($args, $inputArgs);
+			// whether request method is POST setting input on
+			// paramenters for invoking service
+			if($requestMethod=="POST") {
+				$inputArgs = $this->getInputPost();
+				if(!is_null($inputArgs)) {
+					array_push($args, $inputArgs);
+				}
 			}
-			
+				
 			$this->cleanInputs($args);
+			
 			// solving alias before getting the service
 			$serviceInterfaceName = $this->solveServiceInterfaceAlias($serviceInterfaceAlias);
+			
+			// invoking required service method
 			$service = $this->getService($serviceInterfaceName);
 			$return = $this->invoke($service, $methodName, $args);
 				
+			// sending response of command invoke
 			$this->response($parser->parseOutputData($return),200);
 		} catch (RestException $re) {
 			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
@@ -364,35 +432,51 @@ abstract class AbstractRestController extends Rest {
 		}
 	}
 	
-	
 	/**
-	 * @method processService - encapsulates the location and invocation of a service request
+	 * @method processRESTService - encapsulates handle of the HTTP REST method resquested,
+	 * usind a CRUDHelper for invoking the CRUD operations associated to REST service required
+	 * 
 	 *
-	 * @param $modelAlias - alias of the service interface
-	 * @param $methodName - name of the method for invoking
-	 * @return reply of the service method invocation
-	 *
-	 * @throws InvalidArgumentException - whether $serviceInterfaceAlias is null
-	 * @throws InvalidArgumentException - whether $methodName is null
+	 * @param $modelAlias - is the resource of the URI resposible to associate on model class 
+	 * (entity) where the CRUD operations will be executed. So, the resource name should be a
+	 * model class name.
+	 * @param $requestParameter - possibles request parameters:
+	 * GET: 
+	 *    - id = (ex: 1 or 1&2 on composite key)
+	 *    - no parameters = (array args null) for returning all elements
+	 *    - where clause = Entity alias with an expression (ex: alias:expression -> u:u.active=true) 
+	 * POST: no parameters = because the parameter was sending on input post
+	 * PUT: no parameters = same case of POST, the parameter on input post
+	 * DELETE: id =  (ex: 1 or 1&2 on composite key)
+	 * 
+	 * @return reply of the CRUDHelper method invocation
 	 *
 	 * @access private
 	 * @since 1.0
 	 */
-	private function processRestService($modelAlias, $requestParameter) {
+	private function processRESTService($modelAlias, $requestParameter) {
+		// getting configured parser input/output handle
 		$parser = Config::getDataParser();
 		try {
+			// getting model class 
 			$model = $this->getModel($modelAlias);
 
-			$serviceHelper = ServiceHelper::getInstance($this->getDaoConfig());
+			// getting CRUDHelper 
+			$CRUDHelper = Config::getCRUDHelper($this->getDaoConfig());
+			
+			// getting resquest method
 			$requestMethod = $this->get_request_method(); 
 
 			$args = array();
+			// setting model on arguments (entity)
 			array_push($args, $model);
 			
 			switch ($requestMethod) {
 				case "GET": {
 					$method = null;
 					
+					// checking the parameter for choose the get method 
+					// of CRUDHelper and mounting the arguments for invocation
 					if(is_null($requestParameter)){
 						$method = "getAll";
 					} else if(is_numeric($requestParameter)){
@@ -403,7 +487,7 @@ abstract class AbstractRestController extends Rest {
 						// alias:expression (o:o.id>2)
 						$partsOfParameter = str_getcsv($requestParameter,":");
 						if(!is_null($partsOfParameter) && sizeof($partsOfParameter)==2) {
-							$method = "getCriteria";
+							$method = "getBySimpleCriteria";
 							// alias
 							array_push($args, $partsOfParameter[0]);
 							// expression
@@ -412,11 +496,15 @@ abstract class AbstractRestController extends Rest {
 					}
 					
 					$this->cleanInputs($args);
-					$return = $this->invoke($serviceHelper,$method,$args);
+					
+					//invoking CRUDHelper get method
+					$return = $this->invoke($CRUDHelper,$method,$args);
 					
 					if(is_null($return)) {
+						// sending response for no content  
 						$this->response(null,204);
 					} else {
+						// parsing out the reply of the method invocation with associated http status
 						$this->response($parser->parseOutputData($return),200);
 					}
 					
@@ -424,37 +512,47 @@ abstract class AbstractRestController extends Rest {
 				}
 				
 				case "POST": {
+					// getting input post and setting on arguments for invoking
 					$dto = $this->getInputPost();
 					array_push($args, $dto);
 					
 					$this->cleanInputs($args);
-					$return = $this->invoke($serviceHelper,"create",$args);
+					
+					//invoking CRUDHelper create method
+					$return = $this->invoke($CRUDHelper,"create",$args);
+					
+					// parsing out the reply of the method invocation with associated http status
 					$this->response($parser->parseOutputData($return),201);
 					
 					break;
 				}
 				
 				case "PUT": {
+					// getting input post and setting on arguments for invoking
 					$dto = $this->getInputPost();
 					array_push($args, $dto);
 					
 					$this->cleanInputs($args);
-					$return = $this->invoke($serviceHelper,"update",$args);
+					
+					//invoking CRUDHelper update method
+					$return = $this->invoke($CRUDHelper,"update",$args);
+					
+					// parsing out the reply of the method invocation with associated http status
 					$this->response($parser->parseOutputData($return),202);
 					
 					break;
 				}
 				
 				case "DELETE": {
-					if(!is_numeric($requestParameter)){
-						throw new RestException("The parameter for deleting should numeric", 500);
-					}
-
-					//id
+					//id or composite id
 					array_push($args, $requestParameter);
 					
 					$this->cleanInputs($args);
-					$this->invoke($serviceHelper,"delete",$args);
+					
+					//invoking CRUDHelper update method
+					$this->invoke($CRUDHelper,"delete",$args);
+					
+					// sending response for no content
 					$this->response(null,204);
 						
 					break;
@@ -472,42 +570,55 @@ abstract class AbstractRestController extends Rest {
 			$this->response($parser->parseOutputData($err->getMessage()),500);
 		}
 	}
-	
+
+	/**
+	 * @method getInputPost - encapsulates getting and parsing in of input post
+	 *
+	 * @return input post 
+	 *
+	 * @access private
+	 * @since 1.0
+	 */
 	private function getInputPost() {
 		return Config::getDataParser()->parseInputData(file_get_contents('php://input'));
 	}
 	
 	/**
-	 * @method invoke - this method is responsible for invoking the services and  commands, 
+	 * @method invoke - this method is responsible for invoking the services and commands, 
 	 * encapsulating the construction of the parameters using the given post arguments 
 	 *
 	 * @param $object - its the instance of the service/command where the method will be invoked
 	 * @param $methodName - name of method will be invoked (using reflection mechamism)
-	 * @param bool $isCommand - flag that indicates whether object is a command (default false)
+	 * @param array $arguments - arguments for invoking of the method 
+	 * @param bool $arrayHowUniqueArg - flag that indicates how to pass the arguments on method 
+	 * invocation, whether true the arguments are passes with a array, else any position of array 
+	 * arguments will be a paramter of method signature 
+	 * 
 	 * @return reply of the method invocation
 	 * 
 	 * @access private
 	 * @since 1.0
 	 */
-	private function invoke($object, $methodName,$args, bool $arrayHowUniqueArg=false) {
+	private function invoke($object, $methodName, array $arguments, bool $arrayHowUniqueArg=false) {
 		if(is_null($object)) {
+			// whether service or command not found
 			$this->response('Requested service/command not found',404);
 		} else {
+			// checking whether method exists
 			if(!is_null($methodName)) {
 				if((int)method_exists($object,$methodName) > 0) {
-					
 					// invoking method on service/command
 					$reflectionMethod = new \ReflectionMethod($object, $methodName);
 					if($arrayHowUniqueArg) {
 						// on command sets an array of arguments
-						return $reflectionMethod->invoke($object,$args);
+						return $reflectionMethod->invoke($object,$arguments);
 					} else {
 						// on service the sequence of input arguments should be the 
 						// same of the method parameters (method signature)
-						return $reflectionMethod->invokeArgs($object, $args);
+						return $reflectionMethod->invokeArgs($object, $arguments);
 					}
 				} else {
-					$this->response('Resource of service/command not found',404);
+					$this->response('Method of service/command not found',404);
 				}
 			}
 		}
@@ -521,6 +632,7 @@ abstract class AbstractRestController extends Rest {
 	 *          Command implementation: \Project\control\commands\CommandCostumerReport
 	 *
 	 * @param $commandAlias - command alias for locating
+	 * 
 	 * @return the instance of required command
 	 *
 	 * @throws InvalidArgumentException - The command alias can't be null
@@ -542,6 +654,7 @@ abstract class AbstractRestController extends Rest {
 	 *          Class of the Service interface:   \Project\control\services\ServiceRegister
 	 *
 	 * @param $serviceInterfaceAlias - service interface alias for solving
+	 * 
 	 * @return the service interface name
 	 *
 	 * @throws InvalidArgumentException - The service interface alias can't be null
@@ -560,6 +673,7 @@ abstract class AbstractRestController extends Rest {
 	 *          Service implementation: \Project\control\services\ServiceRegisterImp   
 	 *
 	 * @param $serviceInterfaceName - service interface name for locating
+	 * 
 	 * @return the instance of required service 
 	 *
 	 * @throws InvalidArgumentException - The service interface name can't be null
@@ -573,45 +687,34 @@ abstract class AbstractRestController extends Rest {
 	public abstract function locateService($serviceInterfaceName);
 
 	/**
-	 * @method locateCommand - determines the creation a mechanism for seek the command
-	 * on project that to implement the front controller
+	 * @method solveModelAlias - determines the creation of a method for solving the
+	 * model alias returning the complete name of service model call (with namespace), 
+	 * bucause process of REST service needs of the model class for CRUDHelp invoking
 	 *
-	 * @example Command alias: commandCostumerReport (http://.../project/command/commandCostumerReport)
-	 *          Command implementation: \Project\control\commands\CommandCostumerReport
+	 * @example User -> Project\model\User
 	 *
-	 * @param $commandAlias - command alias for locating
-	 * @return the instance of required command
+	 * @param $modelAlias - model alias for solving
+	 * 
+	 * @return the model class name
 	 *
-	 * @throws InvalidArgumentException - The command alias can't be null
-	 * @throws InvalidArgumentException - No command registered for this command alias
-	 * @throws TTMException - Error on instance of the command
+	 * @throws InvalidArgumentException - The model alias can't be null
 	 *
 	 * @access public
 	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function solveModelAlias($modelAlias);
-
 	
 	/**
-	 * @method locateCommand - determines the creation a mechanism for seek the command
-	 * on project that to implement the front controller
+	 * @method getDaoConfig - determines how RestController implementation will send the dao 
+	 * configurations 
 	 *
-	 * @example Command alias: commandCostumerReport (http://.../project/command/commandCostumerReport)
-	 *          Command implementation: \Project\control\commands\CommandCostumerReport
-	 *
-	 * @param $commandAlias - command alias for locating
-	 * @return the instance of required command
-	 *
-	 * @throws InvalidArgumentException - The command alias can't be null
-	 * @throws InvalidArgumentException - No command registered for this command alias
-	 * @throws TTMException - Error on instance of the command
+	 * @return array of dao configurations of the data sources configured
 	 *
 	 * @access public
 	 * @abstract
 	 * @since 1.0
 	 */
 	public abstract function getDaoConfig();
-	
 }
 
