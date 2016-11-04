@@ -356,12 +356,13 @@ abstract class AbstractRestController extends Rest {
 			// sending response of command invoke
 			$this->response($parser->parseOutputData($return),200);
 		} catch (RestException $re) {
-			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
+			$this->response($re->getMessage(),$re->getHttpStatus());
 		} catch (\Exception $e) {
-			$this->response($parser->parseOutputData($e->getMessage()),500);
+			$this->response($e->getMessage(),500);
 		} catch (\Error $err) {
-			$this->response($parser->parseOutputData($err->getMessage()),500);
+			$this->response($err->getMessage(),500);
 		}
+				
 	}
 
 	/**
@@ -427,12 +428,13 @@ abstract class AbstractRestController extends Rest {
 			// sending response of command invoke
 			$this->response($parser->parseOutputData($return),200);
 		} catch (RestException $re) {
-			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
+			$this->response($re->getMessage(),$re->getHttpStatus());
 		} catch (\Exception $e) {
-			$this->response($parser->parseOutputData($e->getMessage()),500);
+			$this->response($e->getMessage(),500);
 		} catch (\Error $err) {
-			$this->response($parser->parseOutputData($err->getMessage()),500);
+			$this->response($err->getMessage(),500);
 		}
+				
 	}
 	
 	/**
@@ -487,15 +489,10 @@ abstract class AbstractRestController extends Rest {
 						//id
 						array_push($args, $requestParameter);
 					} else {
-						// alias:expression (o:o.id>2)
-						$partsOfParameter = str_getcsv($requestParameter,":");
-						if(!is_null($partsOfParameter) && sizeof($partsOfParameter)==2) {
-							$method = "getBySimpleCriteria";
-							// alias
-							array_push($args, $partsOfParameter[0]);
-							// expression
-							array_push($args, $partsOfParameter[1]);
-						}
+						// simple  criteria (only numeric and flags values for simple queries)
+						$method = "getBySimpleCriteria";
+						// expression
+						array_push($args, $requestParameter);
 					}
 					
 					$this->cleanInputs($args);
@@ -541,7 +538,7 @@ abstract class AbstractRestController extends Rest {
 					$return = $this->invoke($CRUDHelper,"update",$args);
 					
 					// parsing out the reply of the method invocation with associated http status
-					$this->response($parser->parseOutputData($return),202);
+ 					$this->response($parser->parseOutputData($return),202);
 					
 					break;
 				}
@@ -566,11 +563,11 @@ abstract class AbstractRestController extends Rest {
 				}
 			}
 		} catch (RestException $re) {
-			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
+			$this->response($re->getMessage(),$re->getHttpStatus());
 		} catch (\Exception $e) {
-			$this->response($parser->parseOutputData($e->getMessage()),500);
+			$this->response($e->getMessage(),500);
 		} catch (\Error $err) {
-			$this->response($parser->parseOutputData($err->getMessage()),500);
+			$this->response($err->getMessage(),500);
 		}
 	}
 
