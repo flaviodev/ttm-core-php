@@ -26,8 +26,9 @@ class UtilDate {
 	 * @since 1.0
 	 */
 	public static function dateToString(\DateTime $dateTime ,string $formatDate = "Y-m-d"):string {
-		if(is_null($dateTime)) 
+		if(is_null($dateTime)){
 			return null;
+		}
 			
 		return $dateTime->format($formatDate);
 	}
@@ -45,12 +46,34 @@ class UtilDate {
 	 * @since 1.0
 	 */
 	public static function stringToDate(string $stringDate, string $formatDateTime = "Y-m-d H:i:s.u"):\DateTime {
-
-		if(is_null($stringDate))
+		if(is_null($stringDate)) {
 			return null;
+		}
 
 		$stringDate.=" 00:00:00.000000";
 		
 		return date_create_from_format($formatDateTime, $stringDate);
 	}
+
+	/**
+	 * @method dateToMsec - parse a date to miliseconds
+	 *
+	 * @param DateTime $dateTime - date for convertion
+	 *
+	 * @return string with date parsed to miliseconds
+	 *
+	 * @access public
+	 * @static
+	 * @since 1.0
+	 */
+	public static function dateToMsec(\DateTime $dateTime):string {
+		if(is_null($dateTime)) {
+			return null;
+		}
+	
+		$msec = ((int) $dateTime->format("U")) * 1000; 
+		
+		return (string) $msec;
+	}	
+		
 }
