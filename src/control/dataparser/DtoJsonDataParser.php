@@ -5,6 +5,7 @@ namespace ttm\control\dataparser;
 use ttm\control\DataParser;
 use ttm\util\Util;
 use ttm\model\Model;
+use ttm\util\UtilDate;
 
 /**
  * @author flaviodev - Flávio de Souza TTM/ITS - fdsdev@gmail.com
@@ -70,7 +71,7 @@ class DtoJsonDataParser implements DataParser {
 			return $this->mountReturn($arrayFO);
 		} else {
 			// checking whether the output data is a model object
-			if($item instanceof  Model) {
+			if($outputData instanceof  Model) {
 				return $this->mountReturn($this->parseModelToObject($outputData));
 			}	
 			
@@ -183,7 +184,17 @@ class DtoJsonDataParser implements DataParser {
 		
 					$value = $reflectionMethod->invoke($model, null);
 		
-					$objectDTO->$property = $value;
+					// checking the value, whether is a date make conversion to msec
+					if(is_a($value, \DateTime::class)) {
+						$value = UtilDate::dateToMsec($value);
+						
+						$date = new \stdClass();
+						$date->date = $value;
+						
+						$objectDTO->$property = $date;
+					} else {
+						$objectDTO->$property = $value;
+					}
 				} else {
 					// same process where attribute is a boolean type 
 					$function = Util::doMethodName($property,"is");
