@@ -239,7 +239,9 @@ abstract class AbstractRestController extends Rest {
 	 */
 	public function processRequest() {
 		try {
-
+			//filtering external inputs (SANITIZE: FILTER DEFAULT)
+			$this->filter_external_inputs();
+			
 			// fixed types 'service' and 'command' or model alias 
 			$resource = null;
 			
@@ -623,6 +625,39 @@ abstract class AbstractRestController extends Rest {
 				}
 			}
 		}
+	}
+
+	protected function filter_external_inputs() {
+		$this->filter_external_input($_GET, INPUT_GET);
+		$this->filter_external_input($_POST,INPUT_POST);
+		$this->filter_external_input($_COOKIE,INPUT_COOKIE);
+		$this->filter_external_input($_SERVER, INPUT_SERVER);
+		$this->filter_external_input($_ENV, INPUT_ENV);
+	}
+		
+	protected function filter_external_input(array $data, $type) {
+		foreach ($data as $k => $v) {
+			$data[$k] = filter_input($type, $v, FILTER_DEFAULT);
+		}
+	}
+	
+	
+	protected function filter_inputs($data) {
+		$filtered_input = array();
+		if (is_array($data)) {
+			foreach ($data as $k => $v) {
+				$filtered_input[$k] = $this->filter_inputs($v);
+			}
+		} else {
+			$filtered_input = filter_var($data,FILTER_DEFAULT);
+		}
+		return $filtered_input;
+	}
+	
+	protected function cleanInputs($data) {
+		$cleaned_data = parent::cleanInputs($data);
+		
+		return $this->filter_inputs($cleaned_data);
 	}
 	
 	/**
