@@ -48,34 +48,31 @@ abstract class AbstractCRUDHelper implements CRUDHelper {
 	protected function __construct(array $daoConfig) {
 		$this->daos =  DaoFactory::getInstance($daoConfig);
 		if(is_null($this->daos) || sizeof($this->daos)==0) {
-			throw new DaoException("There aren't dao returned [CRUDHelper:".__LINE__."]");
+			throw new DaoException("There aren't dao returned [AbstractCRUDHelper:".__LINE__."]");
 		}
 	}
 
 	/**
-	 * @method getDaoByEntity - seeks and returns an associated dao to the informated 
-	 *  entity (model class), using your namespace (model folder) like an alias 
-	 * for getting the registred dao
+	 * @method getDataSourceAliasByEntity - returns data source alias by entity (model class), 
+	 * using your namespace (model folder) like an alias
 	 *
-	 * @param $entity - the model class for seeking the correspondent dao (datasource)
-	 * classes of Dao
-	 * 
-	 * @return responsible dao for treatment the entity
+	 * @param $entity - the model class for extracting the data source alias
+	 *
+	 * @return data source alias
 	 *
 	 * @throws InvalidArgumentException - whether $entity be null
 	 *
 	 * @access protected
 	 * @since 1.0
 	 */
-	protected function getDaoByEntity($entity) { 
+	protected function getDataSourceAliasByEntity($entity) {
 		if(is_null($entity)) {
-			throw new \InvalidArgumentException("The entity name can't be null [CRUDHelper:".__LINE__."]");
+			throw new \InvalidArgumentException("The entity name can't be null [AbstractCRUDHelper:".__LINE__."]");
 		}
-
-		//getting registred dao by model namespace 
-		return $this->getDao(substr($entity,0,strripos($entity, "\\")));
+		
+		return substr($entity,0,strripos($entity, "\\"));
 	}
-
+	
 	/**
 	 * @method getDao - seeks and returns the registred dao for a passed data source alias
 	 *
@@ -100,7 +97,7 @@ abstract class AbstractCRUDHelper implements CRUDHelper {
 		if(isset($this->daos[$dataSourceAlias])) {
 			$dao =  $this->daos[$dataSourceAlias];
 		} else {
-			throw new TTMException("There isnt data soure associated to entity [CRUDHelper:".__LINE__."]");
+			throw new TTMException("There isnt data soure associated to entity [AbstractCRUDHelper:".__LINE__."]");
 		}
 	
 		return $dao;
