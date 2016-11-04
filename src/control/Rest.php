@@ -119,17 +119,11 @@ class Rest {
 			if (get_magic_quotes_gpc()) {
 				$data = trim(stripslashes($data));
 			}
-<<<<<<< HEAD
-			
+
 			if(is_string($data)) {
 				$data = strip_tags($data);
 				$clean_input = trim($data);
 			}
-			
-=======
-			$data = strip_tags($data);
-			$clean_input = trim($data);
->>>>>>> branch 'master' of https://github.com/flaviodev/ttm-core-php.git
 		}
 		return $clean_input; 
 		
