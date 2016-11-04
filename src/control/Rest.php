@@ -120,7 +120,7 @@ class Rest {
 				$data = trim(stripslashes($data));
 			}
 			$data = strip_tags($data);
-			$clean_input = filter_var(trim($data),FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+			$clean_input = trim($data);
 		}
 		return $clean_input; 
 		
