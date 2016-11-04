@@ -54,11 +54,11 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function get($entity, $id):Model{
+	public function get($entity, $id){
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 		
-		$dataSource = $this->getDaoByEntity($entity);
+		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
 		return $dataSource->find($entity,$id);
 	}
@@ -76,10 +76,10 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function getAll($entity):array{
+	public function getAll($entity){
 		$this->doEntityValidation($entity);
 		
-		$dataSource = $this->getDaoByEntity($entity);
+		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 				
 		return $dataSource->findAll($entity);
 	}
@@ -87,43 +87,36 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	/**
 	 * @method getBySimpleCriteria - find the registers on datasource by an entity, 
 	 * creating a simple criteria for applying a WHERE CLAUSE just about the entity
-	 * 
-	 * @example SELECT u FROM Project\model\User u WHERE u.actived IS TRUE
+	 * 	 
+	 * @example SELECT u FROM Project\model\User u WHERE u.actived=true
+	 *          SELECT u FROM Project\model\Invoice u WHERE u.taxAmount>100.00
 	 * 
 	 * for mounting this ORM query language dinamicaly the method uses the parameters:
 	 * 
-	 * "SELECT ".$entityQueryAlias." FROM ".$entity." ".$entityQueryAlias." WHERE ".$whereClause;
+	 * "SELECT e FROM ".$entity." e WHERE e.".$whereClause;
 	 *
-	 * This mounted query is delegated to method getResult  
-	 * 
 	 * @param $entity - name of model class for quering
-	 * @param $entityQueryAlias - alias for entity on query (in example would de letter 'u')
 	 * @param $whereClause - expression to filter the registers on query, using the atrributes
-	 * on object (always using the alias like example: 'u.actived IS TRUE')
+	 * on object (always using the alias like examples: 'actived=true / taxAmout>100.00')
 	 *   
 	 * @return correspondent model objects of query result (whether there are)
 	 *
 	 * @throws InvalidArgumentException - whether $entity be null
-	 * @throws InvalidArgumentException - whether $entityQueryAlias be null
 	 * @throws InvalidArgumentException - whether $whereClause be null
 	 *
 	 * @access public
 	 * @since 1.0
 	 */
-	public function getBySimpleCriteria($entity, $entityQueryAlias ,$whereClause):array {
+	public function getBySimpleCriteria($entity,$whereClause) {
 		$this->doEntityValidation($entity);
-		
-		if(is_null($entityQueryAlias)){
-			throw new \InvalidArgumentException("The entity query alias can't be null [CRUDHelper:".__LINE__."]");
-		}
-		
+				
 		if(is_null($whereClause)){
 			throw new \InvalidArgumentException("The where clause can't be null [CRUDHelper:".__LINE__."]");
 		}
+
+		$entityQuery = "SELECT e FROM ".$entity." e WHERE e.".$whereClause;
 		
-		$entityQuery = "SELECT ".$entityQueryAlias." FROM ".$entity." ".$entityQueryAlias." WHERE ".$whereClause;
-		
-		return $this->getResult($entityQuery, null, $entity);
+		return $this->getResult($entityQuery, null, $this->getDataSourceAliasByEntity($entity));
 	}
 
 	/**
@@ -146,7 +139,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function getResult($ormQuery, $parameters, $dataSourceAlias=null):array {
+	public function getResult($ormQuery, $parameters, $dataSourceAlias=null) {
 		if(is_null($ormQuery)){
 			throw new \InvalidArgumentException("The orm query can't be null [CRUDHelper:".__LINE__."]");
 		}
@@ -176,7 +169,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function getResultSet($sqlQuery, $parameters, $dataSourceAlias=null):array {
+	public function getResultSet($sqlQuery, $parameters, $dataSourceAlias=null) {
 		if(is_null($sqlQuery)){
 			throw new \InvalidArgumentException("The sql query can't be null [CRUDHelper:".__LINE__."]");
 		}
@@ -211,7 +204,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 
 		//setting 0 to id of the new model object
 		$model->setId(0);
-		$dataSource = $this->getDaoByEntity($entity);
+		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
 		return $dataSource->create($model);
 	}
@@ -232,7 +225,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function update($entity, $object){
+	public function update($entity, $object) {
 		$this->doEntityValidation($entity);
 		$this->doObjectValidation($object);
 
@@ -240,14 +233,15 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 			throw new \InvalidArgumentException("The object id should be setted [CRUDHelper:".__LINE__."]");
 		}
 		
-		$dataSource = $this->getDaoByEntity($entity);
+		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
 		$model = $dataSource->find($entity,$object->id);
 		
 		$this->doReturnedObjectValidation($model,$entity,$object->id,"updating");
 				
 		Config::getDataParser()->parseObjectToModel($object,$model);
-		$dataSource->update($model);
+		
+		return $dataSource->update($model);
 	}
 
 	/**
@@ -267,7 +261,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 				
-		$dataSource = $this->getDaoByEntity($entity);
+		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
 		$model = $dataSource->find($entity, $id);
 

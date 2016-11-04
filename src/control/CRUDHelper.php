@@ -33,7 +33,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function get($entity, $id):Model;
+	public function get($entity, $id);
 
 	/**
 	 * @method getAll - find all registers on datasource by an entity, recomend just
@@ -49,17 +49,19 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function getAll($entity):array;
+	public function getAll($entity);
 	
 	/**
 	 * @method getBySimpleCriteria - find the registers on datasource by an entity, 
-	 * creating a simple criteria for applying a WHERE CLAUSE just about the entity
+	 * creating a simple criteria for applying a WHERE CLAUSE just about the numeric
+	 * and boolean entity attributes
 	 * 
-	 * @example SELECT u FROM Project\model\User u WHERE u.actived IS TRUE
+	 * @example SELECT u FROM Project\model\User u WHERE u.actived=true
+	 *          SELECT u FROM Project\model\Invoice u WHERE u.taxAmount>100.00
 	 * 
 	 * for mounting this ORM query language dinamicaly the method uses the parameters:
 	 * 
-	 * "SELECT ".$entityQueryAlias." FROM ".$entity." ".$entityQueryAlias." WHERE ".$whereClause;
+	 * "SELECT e FROM ".$entity." e WHERE e.".$whereClause;
 	 *
 	 * Attetion: this method allows that layer view pass some simples causes to control
 	 * layer, but cant be against the layers independence. A good pratice of this method
@@ -72,21 +74,19 @@ interface CRUDHelper extends Service {
 	 * association 
 	 *
 	 * @param $entity - name of model class for quering
-	 * @param $entityQueryAlias - alias for entity on query (in example would de letter 'u')
 	 * @param $whereClause - expression to filter the registers on query, using the atrributes
-	 * on object (always using the alias like example: 'u.actived IS TRUE')
+	 * on object (always using the alias like examples: 'actived=true / amountTax>100.00')
 	 *   
 	 * @return correspondent model objects of query result (whether there are)
 	 *
 	 * @throws InvalidArgumentException - whether $entity be null
-	 * @throws InvalidArgumentException - whether $entityQueryAlias be null
 	 * @throws InvalidArgumentException - whether $whereClause be null
 	 *
 	 * @access public
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function getBySimpleCriteria($entity, $entityQueryAlias ,$whereClause):array;
+	public function getBySimpleCriteria($entity, $whereClause);
 
 	/**
 	 * @method getResult - find the registers on datasource using a ORM query for getting
@@ -109,7 +109,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function getResult($ormQuery, $parameters, $dataSourceAlias=null):array;
+	public function getResult($ormQuery, $parameters, $dataSourceAlias=null);
 	
 	/**
 	 * @method getResultSet - find the registers on datasource using a SQL query for getting
@@ -132,7 +132,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function getResultSet($sqlQuery, $parameters, $dataSourceAlias=null):array;
+	public function getResultSet($sqlQuery, $parameters, $dataSourceAlias=null);
 	
 	/**
 	 * @method create - creates a model object and persistes it on mapped table 
@@ -151,7 +151,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function create($entity, $object):Model;
+	public function create($entity, $object);
 	
 	/**
 	 * @method update - updates a model object and persistes the changes on mapped table
