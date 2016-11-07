@@ -1,0 +1,21 @@
+Bugs to fix: none
+
+Future Improvements
+- webcomponens OR template
+- composite key find handle
+- pool of connections configurations
+- login mechanism
+- reports generation using jasper
+- session control
+- internationalization
+- handle validations
+- access control 
+
+Solved to commit
+- unfixe name of message
+- define who will be the inicial sort
+- create enter calls update function
+- focus on a field after ng-show
+- create message to error
+- confirm dialig
+- show error message (parsing json)
