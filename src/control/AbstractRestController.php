@@ -238,6 +238,9 @@ abstract class AbstractRestController extends Rest {
 	 * @since 1.0
 	 */
 	public function processRequest() {
+		// getting configured parser input/output handle
+		$parser = Config::getDataParser();
+		
 		try {
 			//filtering external inputs (SANITIZE: FILTER DEFAULT)
 			$this->filter_external_inputs();
@@ -274,30 +277,30 @@ abstract class AbstractRestController extends Rest {
 				// solving command process parameters
 				$commandAlias = $resourceComplement;
 				
-				$this->processCommand($commandAlias,$resourceArgs);
+				$this->processCommand($commandAlias,$resourceArgs,$parser);
 			} else if($resource == "service") {
 				// solving service process parameters
 				$serviceInterfaceAlias = $resourceComplement;
 				$methodName = $resourceArgs[0];
 				$resourceArgs = array_slice($resourceArgs, 1);
 				
-				$this->processService($serviceInterfaceAlias,$methodName,$resourceArgs);
+				$this->processService($serviceInterfaceAlias,$methodName,$resourceArgs,$parser);
 			} else {
 				// solving rest service process parameters
 				$modelAlias = $resource;
 				$requestParameter = $resourceComplement;
 				
-				$this->processRESTService($modelAlias, $requestParameter);
+				$this->processRESTService($modelAlias, $requestParameter,$parser);
 			}
-		} catch (TTMException $ttme) {
+		}catch (RestException $re) {
 			// on ttm exceptions show the message 
-			$this->response($ttme->getMessage(), 500);
+			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
 		} catch (\Exception $e) {
 			// on general exceptions show the trace
-			$this->response($e->getMessage(), 500);
+			$this->response($parser->parseOutputData($e->getMessage()),500);
 		} catch (\Error $err) {
 			// on errors show the trace
-			$this->response($err->getMessage(), 500);
+			$this->response($parser->parseOutputData($err->getMessage()),500);
 		}
 	}
 	
@@ -308,6 +311,7 @@ abstract class AbstractRestController extends Rest {
 	 *
 	 * @param $commandAlias - alias of the command
 	 * @param $resourceArgs - arguments for invoking the required command
+	 * @param $parser - data parser for converting input/output data
 	 * 
 	 * @return reply of the command invocation
 	 *
@@ -317,12 +321,8 @@ abstract class AbstractRestController extends Rest {
 	 * @access private
 	 * @since 1.0
 	 */
-	private function processCommand($commandAlias,$resourceArgs) {
-		// getting configured parser input/output handle
-		$parser = Config::getDataParser();
-		
+	private function processCommand($commandAlias,$resourceArgs, $parser) {
 		try {
-			
 			if(is_null($commandAlias)) {
 				throw new RestException("The command alias can't be null",500);
 			}
@@ -372,6 +372,7 @@ abstract class AbstractRestController extends Rest {
 	 * @param $serviceInterfaceAlias - alias of the service interface
 	 * @param $methodName - name of the method for invoking 
 	 * @param $resourceArgs - arguments for invoking the required service
+	 * @param $parser - data parser for converting input/output data
 	 * 
 	 * @return reply of the service method invocation
 	 *
@@ -382,10 +383,7 @@ abstract class AbstractRestController extends Rest {
 	 * @access private
 	 * @since 1.0
 	 */
-	private function processService($serviceInterfaceAlias, $methodName, $resourceArgs) {
-		// getting configured parser input/output handle
-		$parser = Config::getDataParser();
-		
+	private function processService($serviceInterfaceAlias, $methodName, $resourceArgs, $parser) {
 		if(is_null($serviceInterfaceAlias)) {
 			throw new RestException("The service interface alias can't be null",500);
 		}
@@ -454,14 +452,14 @@ abstract class AbstractRestController extends Rest {
 	 * PUT: no parameters = same case of POST, the parameter on input post
 	 * DELETE: id =  (ex: 1 or 1&2 on composite key)
 	 * 
+	 * @param $parser - data parser for converting input/output data
+	 * 
 	 * @return reply of the CRUDHelper method invocation
 	 *
 	 * @access private
 	 * @since 1.0
 	 */
-	private function processRESTService($modelAlias, $requestParameter) {
-		// getting configured parser input/output handle
-		$parser = Config::getDataParser();
+	private function processRESTService($modelAlias, $requestParameter, $parser) {
 		try {
 			// getting model class 
 			$model = $this->getModel($modelAlias);
@@ -563,11 +561,11 @@ abstract class AbstractRestController extends Rest {
 				}
 			}
 		} catch (RestException $re) {
-			$this->response($re->getMessage(),$re->getHttpStatus());
+			$this->response($parser->parseOutputData($re->getMessage()),$re->getHttpStatus());
 		} catch (\Exception $e) {
-			$this->response($e->getMessage(),500);
+			$this->response($parser->parseOutputData($e->getMessage()),500);
 		} catch (\Error $err) {
-			$this->response($err->getMessage(),500);
+			$this->response($parser->parseOutputData($err->getMessage()),500);
 		}
 	}
 
