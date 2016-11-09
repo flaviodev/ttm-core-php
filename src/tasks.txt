@@ -1,14 +1,16 @@
+improvemente now: 
+- internationalization
+
+
 Bugs to fix: none
 
 Future Improvements
-- webcomponens OR template
+- webcomponens
 - composite key find handle
 - pool of connections configurations
 - login mechanism
 - reports generation using jasper
 - session control
-- internationalization
-- handle validations
 - access control 
 
 Solved to commit: none
