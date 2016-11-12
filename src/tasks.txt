@@ -6,7 +6,6 @@ Bugs to fix: none
 
 Future Improvements
 - webcomponens
-- composite key find handle
 - pool of connections configurations
 - login mechanism
 - reports generation using jasper
