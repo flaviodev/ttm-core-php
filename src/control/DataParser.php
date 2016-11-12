@@ -77,5 +77,5 @@ interface DataParser {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function parseModelToObject(Model $Model);
+	public function parseModelToObject(Model $Model, &$parent=null);
 }

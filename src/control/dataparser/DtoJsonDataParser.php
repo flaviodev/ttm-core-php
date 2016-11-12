@@ -58,17 +58,7 @@ class DtoJsonDataParser implements DataParser {
 
 		// checking whether the $outputData is a array or an iterator object
 		if(is_array($outputData) || is_subclass_of($outputData, \ArrayAccess::class)) {
-			$arrayFO = array();
-			foreach ($outputData as $item) {
-				// checking whether the item is a model object
-				if($item instanceof  Model) {
-					array_push($arrayFO, $this->parseModelToObject($item));
-				} else {
-					array_push($arrayFO, $item);
-				}
-			}
-		
-			return $this->mountReturn($arrayFO);
+			return $this->parseOutputCollection($outputData);
 		} else {
 			// checking whether the output data is a model object
 			if($outputData instanceof  Model) {
@@ -78,6 +68,33 @@ class DtoJsonDataParser implements DataParser {
 			return $this->mountReturn($outputData);
 		}
 	}
+	
+	
+	protected  function parseOutputCollection($outputCollection, &$parent=null) {
+		if(is_null($outputCollection) && (!is_array($outputCollection)
+				|| !is_subclass_of($outputCollection, \ArrayAccess::class))) {
+			return null;
+		}
+	
+		$first=true;
+		$arrayFO = array();
+		foreach ($outputCollection as $item) {
+			// checking whether the item is a model object
+			if($item instanceof  Model) {
+				if($first) {
+					array_push($arrayFO, $this->parseModelToObject($item,$parent));
+					$first=false;
+				} else {
+					array_push($arrayFO, $this->parseModelToObject($item));
+				}
+			} else {
+				array_push($arrayFO, $item);
+			}
+		}
+	
+		return $this->mountReturn($arrayFO);
+	}
+	
 
 	/**
 	 * @method mountReturn - mounts the centered type of return.  
@@ -162,7 +179,7 @@ class DtoJsonDataParser implements DataParser {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function parseModelToObject(Model $model){
+	public function parseModelToObject(Model $model, &$parent=null){
 		if(is_null($model)) {
 			throw new \InvalidArgumentException("Model can't be null [DtoJsonDataParser:".__LINE__."]");
 		}
@@ -183,7 +200,7 @@ class DtoJsonDataParser implements DataParser {
 					$reflectionMethod = new \ReflectionMethod($model, $function);
 		
 					$value = $reflectionMethod->invoke($model, null);
-		
+
 					// checking the value, whether is a date make conversion to msec
 					if(is_a($value, \DateTime::class)) {
 						$value = UtilDate::dateToMsec($value);
@@ -192,8 +209,13 @@ class DtoJsonDataParser implements DataParser {
 						$date->date = $value;
 						
 						$objectDTO->$property = $date;
+					} else if(is_subclass_of($value, \ArrayAccess::class)) {
+						$objectDTO->$property = $this->parseOutputCollection($value,$objectDTO);
 					} else {
 						$objectDTO->$property = $value;
+						if(strpos($prop->getDocComment(), "@ttm-DtoCompositeFirstToParent")>-1 && !is_null($parent)) {
+							$parent->$property = $value;
+						}
 					}
 				} else {
 					// same process where attribute is a boolean type 

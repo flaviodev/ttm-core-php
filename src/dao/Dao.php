@@ -28,7 +28,7 @@ interface Dao {
      * @abstract 
      * @since 1.0
 	*/
-	public function find($entity,$id);
+	public function find($entity,$id,$locale=null, $localeOnly=false);
 
 	/**
 	 * @method findAll - finds all mapped objects on data base (orm) corresponding 
@@ -41,7 +41,7 @@ interface Dao {
 	 * @abstract 
      * @since 1.0
 	 */
-	public function findAll($entity);
+	public function findAll($entity, $locale=null, $localeOnly=false);
 
 	/**
 	 * @method update - updates data base register associated to mapped entity 

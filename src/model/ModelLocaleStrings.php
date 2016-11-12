@@ -13,7 +13,7 @@ namespace ttm\model;
  * @abstract
  * @version 1.0
  */
-abstract class ModelLocale extends Model {
+abstract class ModelLocaleStrings extends Model {
 	/**
 	 * @method getLocale - return the entity locale of your content language 
 	 * (of mapped attribute on concrete class) ex: en-us
@@ -24,7 +24,7 @@ abstract class ModelLocale extends Model {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public abstract function getLocale();
+	public abstract function getLocale():string;
 
 	/**
 	 * @method setLocale - set the entity locale (of mapped attribute on concrete class)
@@ -35,7 +35,7 @@ abstract class ModelLocale extends Model {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public abstract function setLocale($locale);
+	public abstract function setLocale(string $locale);
 }
 
 ?>

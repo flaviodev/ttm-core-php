@@ -33,7 +33,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function get($entity, $id);
+	public function get($entity, $id, $locale=null);
 
 	/**
 	 * @method getAll - find all registers on datasource by an entity, recomend just
@@ -49,7 +49,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function getAll($entity);
+	public function getAll($entity, $locale=null);
 	
 	/**
 	 * @method getBySimpleCriteria - find the registers on datasource by an entity, 

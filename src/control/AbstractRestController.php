@@ -289,8 +289,12 @@ abstract class AbstractRestController extends Rest {
 				// solving rest service process parameters
 				$modelAlias = $resource;
 				$requestParameter = $resourceComplement;
+				$locale = null;
+				if(!is_null($resourceArgs)){
+					$locale = $resourceArgs[0];
+				}
 				
-				$this->processRESTService($modelAlias, $requestParameter,$parser);
+				$this->processRESTService($modelAlias, $requestParameter, $locale, $parser);
 			}
 		}catch (RestException $re) {
 			// on ttm exceptions show the message 
@@ -459,7 +463,7 @@ abstract class AbstractRestController extends Rest {
 	 * @access private
 	 * @since 1.0
 	 */
-	private function processRESTService($modelAlias, $requestParameter, $parser) {
+	private function processRESTService($modelAlias, $requestParameter, $locale, $parser) {
 		try {
 			// getting model class 
 			$model = $this->getModel($modelAlias);
@@ -486,10 +490,15 @@ abstract class AbstractRestController extends Rest {
 						$method = "get";
 						//id
 						array_push($args, $requestParameter);
-					} else {
+						array_push($args, $locale);
+					} else if(stripos($requestParameter,"=")>-1) {
+						echo("rest - simple");
 						// simple  criteria (only numeric and flags values for simple queries)
 						$method = "getBySimpleCriteria";
 						// expression
+						array_push($args, $requestParameter);
+					} else {
+						$method = "getAll";
 						array_push($args, $requestParameter);
 					}
 					

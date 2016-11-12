@@ -54,13 +54,13 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function get($entity, $id){
+	public function get($entity, $id, $locale=null){
 		$this->doEntityValidation($entity);
 		$this->doIdValidation($id);
 		
 		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
-		return $dataSource->find($entity,$id);
+		return $dataSource->find($entity,$id,$locale);
 	}
 
 	/**
@@ -76,12 +76,12 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function getAll($entity){
+	public function getAll($entity, $locale=null){
 		$this->doEntityValidation($entity);
 		
 		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 				
-		return $dataSource->findAll($entity);
+		return $dataSource->findAll($entity, $locale);
 	}
 
 	/**
