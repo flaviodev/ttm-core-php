@@ -151,7 +151,7 @@ interface CRUDHelper extends Service {
 	 * @abstract
 	 * @since 1.0
 	 */
-	public function create($entity, $object);
+	public function create($entity, $object, $locale=null);
 	
 	/**
 	 * @method update - updates a model object and persistes the changes on mapped table

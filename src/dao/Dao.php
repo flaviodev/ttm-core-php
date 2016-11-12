@@ -51,7 +51,7 @@ interface Dao {
 	 * @abstract @access public
 	 * @since 1.0
 	 */
-	public function update(Model $entity);
+	public function update($entity);
 
 	/**
 	 * @method remove - removes (delete) data base register associated to mapped entity
@@ -62,7 +62,7 @@ interface Dao {
 	 * @abstract 
 	 * @since 1.0
 	 */
-	public function remove(Model $entity);
+	public function remove($entity);
 
 	/**
 	 * @method create - creates (insert) data base register associated to mapped entity
@@ -75,7 +75,7 @@ interface Dao {
 	 * @abstract 
 	 * @since 1.0
 	 */
-	public function create(Model $entity);
+	public function create($entity);
 
 	
 	/**
@@ -105,4 +105,15 @@ interface Dao {
 	 * @since 1.0
 	 **/
 	public function getResultSet(string $sql, array $parameters=null);
+	
+	public function beginTransaction();
+	
+	public function commit();
+	
+	public function rollBack();
+	
+	public function refresh($entity);
+	
+	public function getEntityManager(array $options=null);
+	
 }

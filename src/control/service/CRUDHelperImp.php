@@ -195,7 +195,7 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 	 * @access public
 	 * @since 1.0
 	 */
-	public function create($entity, $object):Model {
+	public function create($entity, $object, $locale=null):Model {
 		$this->doEntityValidation($entity);
 		$this->doObjectValidation($object);
 		
@@ -206,7 +206,49 @@ final class CRUDHelperImp extends AbstractCRUDHelper {
 		$model->setId(0);
 		$dataSource = $this->getDao($this->getDataSourceAliasByEntity($entity));
 		
-		return $dataSource->create($model);
+		if(is_null($locale)) {
+			return $dataSource->create($model);
+		} else {
+			
+			$dataSource->beginTransaction();
+			
+			try {
+			
+				$model = $dataSource->create($model);
+				
+				$objectStrings = new \stdClass();
+	
+				$reflectionObject = new \ReflectionObject($object);
+				
+				// getting properties of object
+				foreach ($reflectionObject->getProperties() as $prop) {
+					$propertyName = $prop->getName();
+					$objectStrings->$propertyName = $prop->getValue($object); 
+				}
+				
+				$entityStrings = $entity."Strings";// parametrizar
+	
+				$modelStrings = new $entityStrings($model,$locale);
+				
+				Config::getDataParser()->parseObjectToModel($objectStrings,$modelStrings);
+	
+				$dataSource->create($modelStrings);
+				
+				$dataSource->commit();
+
+				$dataSource->refresh($model);
+				
+				return $model;
+			}catch (\Exception $e) {
+				$dataSource->rollBack();
+				throw $e;
+			} catch (\Error $er) {
+				$dataSource->rollBack();
+				throw $er;
+			}
+			
+			
+		}
 	}
 	
 	/**

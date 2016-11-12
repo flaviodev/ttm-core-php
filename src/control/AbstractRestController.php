@@ -492,7 +492,6 @@ abstract class AbstractRestController extends Rest {
 						array_push($args, $requestParameter);
 						array_push($args, $locale);
 					} else if(stripos($requestParameter,"=")>-1) {
-						echo("rest - simple");
 						// simple  criteria (only numeric and flags values for simple queries)
 						$method = "getBySimpleCriteria";
 						// expression
@@ -523,6 +522,12 @@ abstract class AbstractRestController extends Rest {
 					$dto = $this->getInputPost();
 					array_push($args, $dto);
 					
+					// checking the parameter for choose the get method
+					// of CRUDHelper and mounting the arguments for invocation
+					if(!is_null($requestParameter)){
+						array_push($args, $requestParameter);
+					}
+						
 					$this->cleanInputs($args);
 					
 					//invoking CRUDHelper create method
@@ -530,7 +535,6 @@ abstract class AbstractRestController extends Rest {
 					
 					// parsing out the reply of the method invocation with associated http status
 					$this->response($parser->parseOutputData($return),201);
-					
 					break;
 				}
 				
